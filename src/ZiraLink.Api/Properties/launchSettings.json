@@ -1,0 +1,35 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:42471",
+      "sslPort": 44319
+    }
+  },
+  "profiles": {
+    "ZiraLink.Api": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:5212;http://localhost:5040",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ZIRALINK_CONNECTIONSTRINGS_REDIS": "localhost:6379",
+        "ZIRALINK_REDIS_PASSWORD": "",
+        "ZIRALINK_URL_IDS": "https://localhost:5001",
+        "ZIRALINK_REDIRECTURI": "http://localhost:3000/signin-result"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
