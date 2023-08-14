@@ -18,6 +18,11 @@ namespace ZiraLink.Api.Application
             _dbContext = dbContext;
         }
 
+        public async Task<List<Project>> GetAsync(CancellationToken cancellationToken)
+        {
+            return await _dbContext.Projects.AsNoTracking().ToListAsync(cancellationToken);
+        }
+
         public async Task<Guid> CreateAsync(long id, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
         {
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id, cancellationToken);

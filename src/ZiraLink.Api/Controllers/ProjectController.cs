@@ -5,6 +5,7 @@ using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Exceptions;
 using ZiraLink.Api.Framework;
 using ZiraLink.Api.Models.Project.InputModels;
+using ZiraLink.Domain;
 
 namespace ZiraLink.Api.Controllers
 {
@@ -20,6 +21,17 @@ namespace ZiraLink.Api.Controllers
         {
             _sessionService = sessionService;
             _projectService = projectService;
+        }
+
+        [HttpGet]
+        public async Task<ApiResponse<List<Project>>> GetAsync(CancellationToken cancellationToken)
+        {
+            var customer = await _sessionService.GetCurrentCustomer(cancellationToken);
+            if (customer == null)
+                throw new NotFoundException("Customer");
+
+            var result = await _projectService.GetAsync(cancellationToken);
+            return ApiResponse<List<Project>>.CreateSuccessResponse(result);
         }
 
         [HttpPost]

@@ -157,7 +157,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 var app = builder.Build();
-app.UseErrorHandler();
 
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
 context.Database.Migrate();
@@ -172,6 +171,8 @@ app.UseForwardedHeaders();
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseErrorHandler();
 
 app.UseCors("AllowSpecificOrigins");
 
