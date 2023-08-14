@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Reflection;
 using Duende.Bff.Yarp;
 using IdentityModel;
@@ -69,7 +70,6 @@ builder.Services.AddAuthentication(options =>
                     ValidateAudience = false
                 };
 
-
                 var db = connectionMultiplexer.GetDatabase(10);
 
                 options.Events = new JwtBearerEvents
@@ -82,23 +82,6 @@ builder.Services.AddAuthentication(options =>
                         context.Token = token;
                     }
                 };
-
-                //options.Events = new JwtBearerEvents
-                //{
-                //    OnMessageReceived = context =>
-                //    {
-                //        // If the request is for our hub...
-                //        var path = context.HttpContext.Request.Path;
-                //        if (path.StartsWithSegments("/Hubs/Default"))
-                //        {
-                //            var accessToken = context.Request.Headers["Authorization"];
-                //            if (!string.IsNullOrEmpty(accessToken))
-                //                // Read the token out of the query string
-                //                context.Token = accessToken;
-                //        }
-                //        return Task.CompletedTask;
-                //    }
-                //};
             })
             .AddOpenIdConnect("oidc", options =>
             {
@@ -111,14 +94,14 @@ builder.Services.AddAuthentication(options =>
                 options.Scope.Add("api1");
                 options.SaveTokens = true;
 
-                //options.Scope.Clear();
                 options.GetClaimsFromUserInfoEndpoint = true;
 
-                //foreach (string scope in scopes)
-                //{
-
-                //    options.Scope.Add(scope);
-                //}
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
+                {
+                    HttpClientHandler handler = new HttpClientHandler();
+                    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                    options.BackchannelHttpHandler = handler;
+                }
             });
 
 builder.Services.AddSingleton<ITokenService, TokenService>();

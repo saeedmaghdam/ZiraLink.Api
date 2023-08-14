@@ -20,7 +20,11 @@
         "ZIRALINK_CONNECTIONSTRINGS_REDIS": "localhost:6379",
         "ZIRALINK_REDIS_PASSWORD": "",
         "ZIRALINK_URL_IDS": "https://localhost:5001",
-        "ZIRALINK_REDIRECTURI": "http://localhost:3000/signin-result"
+        "ZIRALINK_REDIRECTURI": "http://localhost:3000/signin-result",
+        //"ASPNETCORE_URLS": "https://+:443;http://+:80",
+        //"ASPNETCORE_HTTPS_PORT": "443",
+        //"ASPNETCORE_Kestrel__Certificates__Default__Password": "zira_cert",
+        //"ASPNETCORE_Kestrel__Certificates__Default__Path": "server.pfx"
       }
     },
     "IIS Express": {
