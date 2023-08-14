@@ -7,10 +7,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using ZiraLink.Api;
+using ZiraLink.Api.Application;
+using ZiraLink.Api.Framework;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +40,8 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite($"Data Source={System.IO.Path.Join(pathToExe, "database.db")}"));
+
 var connectionMultiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions
 {
     EndPoints = { Configuration["ZIRALINK_CONNECTIONSTRINGS_REDIS"]! },
@@ -44,6 +49,8 @@ var connectionMultiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptio
     Password = Configuration["ZIRALINK_REDIS_PASSWORD"]!
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp => connectionMultiplexer);
+
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 builder.Services.AddAuthorization();
 builder.Services
@@ -148,6 +155,10 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 var app = builder.Build();
+app.UseErrorHandler();
+
+var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
+context.Database.Migrate();
 
 app.Use((context, next) =>
 {

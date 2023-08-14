@@ -1,0 +1,45 @@
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using ZiraLink.Api.Application.Exceptions;
+using ZiraLink.Domain;
+using ZiraLink.Domain.Enums;
+
+namespace ZiraLink.Api.Application
+{
+    public class ProjectService : IProjectService
+    {
+        private readonly ILogger<ProjectService> _logger;
+        private readonly AppDbContext _dbContext;
+
+        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext)
+        {
+            _logger = logger;
+            _dbContext = dbContext;
+        }
+
+        public async Task<Guid> CreateAsync(string customerExternalId, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
+        {
+            var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.ExternalId == customerExternalId, cancellationToken);
+            if (customer == null)
+                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerExternalId)});
+
+            var project = new Project
+            {
+                ViewId = Guid.NewGuid(),
+                CustomerId = customer.Id,
+                Title = title,
+                DomainType = domainType,
+                Domain = domain,
+                InternalUrl = internalUrl,
+                DateCreated = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow
+            };
+
+            await _dbContext.Projects.AddAsync(project, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return project.ViewId;
+        }
+    }
+}
