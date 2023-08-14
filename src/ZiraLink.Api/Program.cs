@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Writers;
 using StackExchange.Redis;
 using ZiraLink.Api;
 using ZiraLink.Api.Application;
@@ -100,7 +101,10 @@ builder.Services.AddAuthentication(options =>
                 options.ClientId = "bff";
                 options.ClientSecret = "secret";
                 options.ResponseType = OidcConstants.ResponseTypes.Code;
+                options.Scope.Clear();
                 options.Scope.Add("api1");
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
                 options.SaveTokens = true;
 
                 options.GetClaimsFromUserInfoEndpoint = true;
@@ -198,6 +202,7 @@ app.UseEndpoints(endpoints =>
         token = httpContextAccessor.HttpContext.Request.Query["access_token"];
         if (string.IsNullOrEmpty(token))
             token = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+        var id_token = await httpContextAccessor.HttpContext.GetTokenAsync("id_token");
 
         if (string.IsNullOrEmpty(token))
         {
@@ -216,6 +221,7 @@ app.UseEndpoints(endpoints =>
         await tokenService.SetSubTokenAsync(sub, token);
         await tokenService.SetSubTokenPAsync(sub, tokenp);
         await tokenService.SetTokenPTokenAsync(tokenp, token);
+        await tokenService.SetSubIdTokenAsync(sub, id_token);
 
         var uri = new Uri(Configuration["ZIRALINK_REDIRECTURI"]!);
         httpContextAccessor.HttpContext.Response.Redirect($"{uri}?access_token={tokenp}", true);

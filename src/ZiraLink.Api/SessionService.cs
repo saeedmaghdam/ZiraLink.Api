@@ -1,6 +1,8 @@
-﻿using StackExchange.Redis;
+﻿using System.Text.Json;
+using IdentityModel.Client;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Framework;
+using ZiraLink.Api.Models;
 using ZiraLink.Domain;
 
 namespace ZiraLink.Api
@@ -9,13 +11,15 @@ namespace ZiraLink.Api
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICustomerService _customerService;
-        private readonly IConnectionMultiplexer _connectionMultiplexer;
+        private readonly ITokenService _tokenService;
+        private readonly IConfiguration _configuration;
 
-        public SessionService(IHttpContextAccessor httpContextAccessor, ICustomerService customerService, IConnectionMultiplexer connectionMultiplexer)
+        public SessionService(IHttpContextAccessor httpContextAccessor, ICustomerService customerService, ITokenService tokenService, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
             _customerService = customerService;
-            _connectionMultiplexer = connectionMultiplexer;
+            _tokenService = tokenService;
+            _configuration = configuration;
         }
 
         public async Task<Customer> GetCurrentCustomer(CancellationToken cancellationToken)
@@ -24,6 +28,26 @@ namespace ZiraLink.Api
             var customer = await _customerService.GetCustomerByExternalIdAsync(userId.Value, cancellationToken);
 
             return customer;
+        }
+
+        public async Task<ProfileViewModel> GetCurrentCustomerProfile(CancellationToken cancellationToken)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "sub");
+
+            var token = await _tokenService.GetTokenBySubAsync(userId.Value);
+            Uri baseUri = new Uri(_configuration["ZIRALINK_URL_IDS"]);
+            Uri uri = new Uri(baseUri, "connect/userinfo");
+            var userInfoRequest = new UserInfoRequest
+            {
+                Address = uri.ToString(),
+                Token = token
+            };
+
+            var client = new HttpClient();
+            var userInfoResponse = await client.GetUserInfoAsync(userInfoRequest);
+            var result = await userInfoResponse.HttpResponse.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<ProfileViewModel>(result);
         }
     }
 }

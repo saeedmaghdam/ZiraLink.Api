@@ -14,5 +14,7 @@ namespace ZiraLink.Api
         Task<string?> GetTokenPBySubAsync(string sub);
         Task SetTokenPTokenAsync(string tokenp, string token);
         Task<string?> GetTokenByTokenP(string tokenp);
+        Task SetSubIdTokenAsync(string sub, string id_token);
+        Task<string?> GetIdTokenSubAsync(string sub);
     }
 }

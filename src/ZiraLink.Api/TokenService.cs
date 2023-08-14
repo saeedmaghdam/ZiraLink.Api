@@ -90,5 +90,15 @@ namespace ZiraLink.Api
         {
             return await _db.StringGetAsync($"tokenptoken:{tokenp}");
         }
+
+        public async Task SetSubIdTokenAsync(string sub, string id_token)
+        {
+            await _db.StringSetAsync($"sub:{sub}", id_token);
+        }
+
+        public async Task<string?> GetIdTokenSubAsync(string sub)
+        {
+            return await _db.StringGetAsync($"sub:{sub}");
+        }
     }
 }
