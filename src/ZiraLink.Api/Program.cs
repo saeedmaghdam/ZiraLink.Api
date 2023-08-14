@@ -50,7 +50,9 @@ var connectionMultiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptio
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp => connectionMultiplexer);
 
+builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 builder.Services.AddAuthorization();
 builder.Services

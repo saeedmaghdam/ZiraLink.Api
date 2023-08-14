@@ -18,11 +18,11 @@ namespace ZiraLink.Api.Application
             _dbContext = dbContext;
         }
 
-        public async Task<Guid> CreateAsync(string customerExternalId, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
+        public async Task<Guid> CreateAsync(long id, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
         {
-            var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.ExternalId == customerExternalId, cancellationToken);
+            var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (customer == null)
-                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerExternalId)});
+                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), id)});
 
             var project = new Project
             {
