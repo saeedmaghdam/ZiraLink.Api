@@ -10,12 +10,15 @@ namespace ZiraLink.Domain
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public Guid ViewId { get; set; }
+        [ForeignKey("CustomerId")]
         public long CustomerId { get; set; }
         public string Title { get; set; }
         public DomainType DomainType { get; set; }
         public string Domain { get; set; }
         public string InternalUrl { get; set; }
         public DateTime DateCreated { get; set; }    
-        public DateTime DateUpdated { get; set; }    
+        public DateTime DateUpdated { get; set; }
+
+        public Customer Customer { get; set; }
     }
 }
