@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZiraLink.Api.Application.Exceptions;
 using ZiraLink.Domain;
@@ -23,11 +22,18 @@ namespace ZiraLink.Api.Application
             return await _dbContext.Projects.Include(x => x.Customer).AsNoTracking().Where(x => x.Customer.Id == customerId).ToListAsync(cancellationToken);
         }
 
-        public async Task<Guid> CreateAsync(long id, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
+        public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
         {
-            var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+            if (string.IsNullOrEmpty(title))
+                throw new ArgumentNullException(nameof(title));
+            if (string.IsNullOrEmpty(domain))
+                throw new ArgumentNullException(nameof(domain));
+            if (string.IsNullOrEmpty(internalUrl))
+                throw new ArgumentNullException(nameof(internalUrl));
+
+            var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
-                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), id) });
+                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
 
             var project = new Project
             {

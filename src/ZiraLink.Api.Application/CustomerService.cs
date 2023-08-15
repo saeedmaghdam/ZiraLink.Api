@@ -32,15 +32,15 @@ namespace ZiraLink.Api.Application
         public async Task<Guid> CreateAsync(string username, string password, string email, string name, string family, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(username))
-                throw new Exception($"{nameof(username)} is required");
+                throw new ArgumentNullException(nameof(username));
             if (string.IsNullOrEmpty(password))
-                throw new Exception($"{nameof(password)} is required");
+                throw new ArgumentNullException(nameof(password));
             if (string.IsNullOrEmpty(email))
-                throw new Exception($"{nameof(email)} is required");
+                throw new ArgumentNullException(nameof(email));
             if (string.IsNullOrEmpty(name))
-                throw new Exception($"{nameof(name)} is required");
+                throw new ArgumentNullException(nameof(name));
             if (string.IsNullOrEmpty(family))
-                throw new Exception($"{nameof(family)} is required");
+                throw new ArgumentNullException(nameof(family));
 
             var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.Username == username || x.Email == email, cancellationToken);
             if (customer != null) throw new ApplicationException("Customer exists");
@@ -83,11 +83,11 @@ namespace ZiraLink.Api.Application
         public async Task ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(userId))
-                throw new Exception($"{nameof(userId)} is required");
+                throw new ArgumentNullException(nameof(userId));
             if (string.IsNullOrEmpty(currentPassword))
-                throw new Exception($"{nameof(currentPassword)} is required");
+                throw new ArgumentNullException(nameof(currentPassword));
             if (string.IsNullOrEmpty(newPassword))
-                throw new Exception($"{nameof(newPassword)} is required");
+                throw new ArgumentNullException(nameof(newPassword));
 
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.ExternalId == userId, cancellationToken);
             if (customer == null) throw new NotFoundException(nameof(Customer));
@@ -114,11 +114,11 @@ namespace ZiraLink.Api.Application
         public async Task UpdateProfileAsync(string userId, string name, string family, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(userId))
-                throw new Exception($"{nameof(userId)} is required");
+                throw new ArgumentNullException(nameof(userId));
             if (string.IsNullOrEmpty(name))
-                throw new Exception($"{nameof(name)} is required");
+                throw new ArgumentNullException(nameof(name));
             if (string.IsNullOrEmpty(family))
-                throw new Exception($"{nameof(family)} is required");
+                throw new ArgumentNullException(nameof(family));
 
             var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.ExternalId == userId, cancellationToken);
             if (customer == null) throw new NotFoundException(nameof(Customer));
