@@ -32,7 +32,7 @@ namespace ZiraLink.Api.Controllers
             if (customer == null)
                 throw new NotFoundException("Customer");
 
-            var result = await _projectService.GetAsync(cancellationToken);
+            var result = await _projectService.GetAsync(customer.Id, cancellationToken);
             return ApiResponse<List<Project>>.CreateSuccessResponse(result);
         }
 

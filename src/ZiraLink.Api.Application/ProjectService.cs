@@ -18,9 +18,9 @@ namespace ZiraLink.Api.Application
             _dbContext = dbContext;
         }
 
-        public async Task<List<Project>> GetAsync(CancellationToken cancellationToken)
+        public async Task<List<Project>> GetAsync(long customerId, CancellationToken cancellationToken)
         {
-            return await _dbContext.Projects.Include(x => x.Customer).AsNoTracking().ToListAsync(cancellationToken);
+            return await _dbContext.Projects.Include(x => x.Customer).AsNoTracking().Where(x => x.Customer.Id == customerId).ToListAsync(cancellationToken);
         }
 
         public async Task<Guid> CreateAsync(long id, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
@@ -49,7 +49,7 @@ namespace ZiraLink.Api.Application
 
         public async Task DeleteAsync(long customerId, long id, CancellationToken cancellationToken)
         {
-            var project = await _dbContext.Projects.AsNoTracking().Where(x=> x.Id == id && x.CustomerId == customerId).SingleOrDefaultAsync(cancellationToken);
+            var project = await _dbContext.Projects.AsNoTracking().Where(x => x.Id == id && x.CustomerId == customerId).SingleOrDefaultAsync(cancellationToken);
             if (project == null)
                 throw new NotFoundException(nameof(Project));
 
