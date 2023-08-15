@@ -46,5 +46,16 @@ namespace ZiraLink.Api.Controllers
             var result = await _projectService.CreateAsync(customer.Id, model.Title, model.DomainType, model.Domain, model.InternalUrl, cancellationToken);
             return ApiResponse<Guid>.CreateSuccessResponse(result);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ApiDefaultResponse> CreateAsync([FromRoute] long id, CancellationToken cancellationToken)
+        {
+            var customer = await _sessionService.GetCurrentCustomer(cancellationToken);
+            if (customer == null)
+                throw new NotFoundException("Customer");
+
+            await _projectService.DeleteAsync(customer.Id, id, cancellationToken);
+            return ApiDefaultResponse.CreateSuccessResponse();
+        }
     }
 }

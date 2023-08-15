@@ -46,5 +46,15 @@ namespace ZiraLink.Api.Application
 
             return project.ViewId;
         }
+
+        public async Task DeleteAsync(long customerId, long id, CancellationToken cancellationToken)
+        {
+            var project = await _dbContext.Projects.AsNoTracking().Where(x=> x.Id == id && x.CustomerId == customerId).SingleOrDefaultAsync(cancellationToken);
+            if (project == null)
+                throw new NotFoundException(nameof(Project));
+
+            _dbContext.Projects.Remove(project);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }
