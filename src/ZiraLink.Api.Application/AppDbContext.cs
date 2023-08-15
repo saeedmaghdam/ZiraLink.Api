@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ZiraLink.Domain;
 
 namespace ZiraLink.Api.Application
@@ -12,11 +11,5 @@ namespace ZiraLink.Api.Application
         public string DbPath { get; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    var pathToExe = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location);
-        //    optionsBuilder.UseSqlite($"Data Source={System.IO.Path.Join(pathToExe, "database.db")}");
-        //}
     }
 }

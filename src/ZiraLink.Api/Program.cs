@@ -40,7 +40,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite($"Data Source={System.IO.Path.Join(pathToExe, "database.db")}"));
+var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" ? $"Data Source={Path.Combine(pathToExe, "database.db")}" : Environment.GetEnvironmentVariable("ZIRALINK_CONNECTIONSTRINGS_DB");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
 
 var connectionMultiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions
 {
@@ -209,12 +210,12 @@ app.UseEndpoints(endpoints =>
             return Task.FromResult(0);
         }
 
-        app.Logger.LogInformation($"Token: {token}");
 
         var jwtSecurityToken = tokenService.ParseToken(token);
         var sub = jwtSecurityToken.Claims.Single(claim => claim.Type == "sub").Value;
         var tokenp = await tokenService.GenerateToken(sub, String.Empty, String.Empty);
-        app.Logger.LogInformation($"TokenP: {tokenp}");
+
+        app.Logger.LogInformation($"{sub} logged in, Token: {token}, TokenP: {tokenp}");
 
         await tokenService.SetTokenPSubAsync(tokenp, sub);
         await tokenService.SetSubTokenAsync(sub, token);

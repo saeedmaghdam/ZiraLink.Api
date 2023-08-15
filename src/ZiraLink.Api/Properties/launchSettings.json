@@ -17,6 +17,7 @@
       "applicationUrl": "https://localhost:5212;http://localhost:5040",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "ZIRALINK_CONNECTIONSTRINGS_DB": "database.md",
         "ZIRALINK_CONNECTIONSTRINGS_REDIS": "localhost:6379",
         "ZIRALINK_REDIS_PASSWORD": "",
         "ZIRALINK_URL_IDS": "https://ids.ziralink.com:5001",
