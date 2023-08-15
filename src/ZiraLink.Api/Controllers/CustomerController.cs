@@ -11,6 +11,7 @@ using ZiraLink.Api.Models.Customer;
 using ZiraLink.Api.Application.Framework;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Exceptions;
+using ZiraLink.Domain;
 
 namespace ZiraLink.Api.Controllers
 {
@@ -30,11 +31,13 @@ namespace ZiraLink.Api.Controllers
         }
 
         [HttpGet("Profile")]
-        public async Task<ApiResponse<ProfileViewModel>> GetProfileAsync(CancellationToken cancellationToken)
+        public async Task<ApiResponse<Customer>> GetProfileAsync(CancellationToken cancellationToken)
         {
-            var result = await _sessionService.GetCurrentCustomerProfile(cancellationToken);
+            var customer = await _sessionService.GetCurrentCustomer(cancellationToken);
+            if (customer == null)
+                throw new NotFoundException("Customer");
 
-            return ApiResponse<ProfileViewModel>.CreateSuccessResponse(result);
+            return ApiResponse<Customer>.CreateSuccessResponse(customer);
         }
 
         [HttpPost]

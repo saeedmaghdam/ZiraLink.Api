@@ -101,7 +101,7 @@ builder.Services.AddAuthentication(options =>
                 options.ClientSecret = "secret";
                 options.ResponseType = OidcConstants.ResponseTypes.Code;
                 options.Scope.Clear();
-                options.Scope.Add("api1");
+                options.Scope.Add("ziralink");
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.SaveTokens = true;
