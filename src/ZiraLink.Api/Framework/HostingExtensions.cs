@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
+using ZiraLink.Api.Application.Framework;
 
 namespace ZiraLink.Api.Framework
 {

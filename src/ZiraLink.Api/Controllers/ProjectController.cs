@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Exceptions;
+using ZiraLink.Api.Application.Framework;
 using ZiraLink.Api.Framework;
 using ZiraLink.Api.Models.Project.InputModels;
 using ZiraLink.Domain;
@@ -36,7 +37,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ApiResponse<Guid>> CreateAsync([FromBody] CreateInputModel model, CancellationToken cancellationToken)
+        public async Task<ApiResponse<Guid>> CreateAsync([FromBody] CreateProjectInputModel model, CancellationToken cancellationToken)
         {
             var customer = await _sessionService.GetCurrentCustomer(cancellationToken);
             if (customer == null)

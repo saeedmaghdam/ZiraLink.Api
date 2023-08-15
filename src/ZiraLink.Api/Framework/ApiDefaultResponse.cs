@@ -1,4 +1,6 @@
-﻿namespace ZiraLink.Api.Framework
+﻿using ZiraLink.Api.Application.Framework;
+
+namespace ZiraLink.Api.Framework
 {
     public class ApiDefaultResponse : ApiResponse<object>
     {

@@ -2,7 +2,7 @@
 
 namespace ZiraLink.Api.Models.Project.InputModels
 {
-    public class CreateInputModel
+    public class CreateProjectInputModel
     {
         public string Title { get; set; }
         public DomainType DomainType { get; set; }

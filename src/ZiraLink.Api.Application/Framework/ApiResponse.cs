@@ -1,4 +1,4 @@
-﻿namespace ZiraLink.Api.Framework
+﻿namespace ZiraLink.Api.Application.Framework
 {
     public class ApiResponse<T>
     {
