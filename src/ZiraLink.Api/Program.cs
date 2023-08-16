@@ -115,7 +115,7 @@ builder.Services.AddAuthentication(options =>
                 if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
                 {
                     HttpClientHandler handler = new HttpClientHandler();
-                    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                    //handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
                     options.BackchannelHttpHandler = handler;
                 }
             });

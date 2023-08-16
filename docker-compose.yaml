@@ -70,6 +70,8 @@ services:
     ports:
       - "4000:80"
       - "4001:443"
+    volumes:
+      - ziralink-web-data:/var/log/nginx/
   # mssql:
   #   image: mcr.microsoft.com/mssql/server:2022-latest
   #   container_name: mssql-container
@@ -93,4 +95,5 @@ networks:
 volumes:
   ziralink-api-data: 
   ziralink-ids-data: 
+  ziralink-web-data:
   redis-data: 
