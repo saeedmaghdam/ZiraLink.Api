@@ -33,7 +33,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001")
+            builder.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001", "http://ziralink.com:3000", "https://ziralink.com:3001")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()
@@ -157,7 +157,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
         ForwardedHeaders.XForwardedProto;
     // Only loopback proxies are allowed by default.
-    // Clear that restriction because forwarders are enabled by explicit 
+    // Clear that restriction because forwarders are enabled by explicit
     // configuration.
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
