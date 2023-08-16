@@ -18,6 +18,7 @@ namespace ZiraLink.Domain
         public string InternalUrl { get; set; }
         public DateTime DateCreated { get; set; }    
         public DateTime DateUpdated { get; set; }
+        public ProjectState State { get; set; }
 
         public Customer Customer { get; set; }
     }

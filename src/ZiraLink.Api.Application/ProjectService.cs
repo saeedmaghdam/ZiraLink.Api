@@ -22,6 +22,15 @@ namespace ZiraLink.Api.Application
             return await _dbContext.Projects.Include(x => x.Customer).AsNoTracking().Where(x => x.Customer.Id == customerId).ToListAsync(cancellationToken);
         }
 
+        public async Task<Project> GetByIdAsync(long id, long customerId, CancellationToken cancellationToken)
+        {
+            var project = await _dbContext.Projects.Include(x => x.Customer).AsNoTracking().SingleOrDefaultAsync(x => x.Id == id && x.Customer.Id == customerId, cancellationToken);
+            if (project == null)
+                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
+
+            return project;
+        }
+
         public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(title))
@@ -44,7 +53,8 @@ namespace ZiraLink.Api.Application
                 Domain = domain,
                 InternalUrl = internalUrl,
                 DateCreated = DateTime.UtcNow,
-                DateUpdated = DateTime.UtcNow
+                DateUpdated = DateTime.UtcNow,
+                State = ProjectState.Active
             };
 
             await _dbContext.Projects.AddAsync(project, cancellationToken);
@@ -60,6 +70,28 @@ namespace ZiraLink.Api.Application
                 throw new NotFoundException(nameof(Project));
 
             _dbContext.Projects.Remove(project);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task PatchAsync(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
+        {
+            var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
+            if (customer == null)
+                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
+
+            var project = await _dbContext.Projects.SingleOrDefaultAsync(x => x.Id == id && x.CustomerId == customerId, cancellationToken);
+            if (project == null)
+                throw new NotFoundException(nameof(Project), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(Project.Id), id) });
+
+            if (!string.IsNullOrEmpty(title))
+                project.Title = title;
+            if (!string.IsNullOrEmpty(domain))
+                project.Domain = domain;
+            if (!string.IsNullOrEmpty(internalUrl))
+                project.InternalUrl = internalUrl;
+            project.DomainType = domainType;
+            project.State = state;
+
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }

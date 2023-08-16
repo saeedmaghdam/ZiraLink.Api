@@ -42,6 +42,7 @@ builder.Services.AddCors(options =>
 
 var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" ? $"Data Source={Path.Combine(pathToExe, "database.db")}" : Environment.GetEnvironmentVariable("ZIRALINK_CONNECTIONSTRINGS_DB");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+//builder.Services.AddDbContext<AppDbContext>();
 
 var connectionMultiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions
 {
