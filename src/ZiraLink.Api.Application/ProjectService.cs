@@ -31,7 +31,7 @@ namespace ZiraLink.Api.Application
             return project;
         }
 
-        public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, CancellationToken cancellationToken)
+        public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(title))
                 throw new ArgumentNullException(nameof(title));
@@ -54,7 +54,7 @@ namespace ZiraLink.Api.Application
                 InternalUrl = internalUrl,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
-                State = ProjectState.Active
+                State = state
             };
 
             await _dbContext.Projects.AddAsync(project, cancellationToken);

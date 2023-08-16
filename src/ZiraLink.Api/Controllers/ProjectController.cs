@@ -54,7 +54,7 @@ namespace ZiraLink.Api.Controllers
             if (customer == null)
                 throw new NotFoundException("Customer");
 
-            var result = await _projectService.CreateAsync(customer.Id, model.Title, model.DomainType, model.Domain, model.InternalUrl, cancellationToken);
+            var result = await _projectService.CreateAsync(customer.Id, model.Title, model.DomainType, model.Domain, model.InternalUrl, model.State, cancellationToken);
             return ApiResponse<Guid>.CreateSuccessResponse(result);
         }
 

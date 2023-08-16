@@ -29,6 +29,32 @@ namespace ZiraLink.Api.Application
             return customer;
         }
 
+        public async Task<Guid> CreateLocallyAsync(string externalId, string username, string email, string name, string family, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException(nameof(username));
+            //if (string.IsNullOrEmpty(email))
+            //    throw new ArgumentNullException(nameof(email));
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+            if (string.IsNullOrEmpty(family))
+                throw new ArgumentNullException(nameof(family));
+
+            var customer = new Customer
+            {
+                ViewId = Guid.NewGuid(),
+                Username = username,
+                Email = email,
+                Name = name,
+                Family = family,
+                ExternalId = externalId
+            };
+            await _dbContext.Customers.AddAsync(customer, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return customer.ViewId;
+        }
+
         public async Task<Guid> CreateAsync(string username, string password, string email, string name, string family, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(username))

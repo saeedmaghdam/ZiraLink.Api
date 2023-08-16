@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using ZiraLink.Api;
 using ZiraLink.Api.Application;
+using ZiraLink.Api.Application.Exceptions;
 using ZiraLink.Api.Framework;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -106,6 +107,7 @@ builder.Services.AddAuthentication(options =>
                 options.Scope.Add("ziralink");
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
+                options.Scope.Add("email");
                 options.SaveTokens = true;
 
                 options.GetClaimsFromUserInfoEndpoint = true;
@@ -196,7 +198,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapBffManagementEndpoints();
     endpoints.MapControllers();
 
-    endpoints.MapGet("/", async (HttpContext context, IHttpContextAccessor httpContextAccessor, ITokenService tokenService, CancellationToken cancellationToken) =>
+    endpoints.MapGet("/", async (HttpContext context, IHttpContextAccessor httpContextAccessor, ITokenService tokenService, ISessionService sessionService, ICustomerService customerService, CancellationToken cancellationToken) =>
     {
         var token = default(string);
 
@@ -223,6 +225,16 @@ app.UseEndpoints(endpoints =>
         await tokenService.SetSubTokenPAsync(sub, tokenp);
         await tokenService.SetTokenPTokenAsync(tokenp, token);
         await tokenService.SetSubIdTokenAsync(sub, id_token);
+
+        try
+        {
+            var _ = await customerService.GetCustomerByExternalIdAsync(sub, cancellationToken);
+        }
+        catch (NotFoundException)
+        {
+            var customerProfile = await sessionService.GetCurrentCustomerProfile(cancellationToken);
+            var _ = await customerService.CreateLocallyAsync(sub, customerProfile.Username, customerProfile.Email, customerProfile.Name, customerProfile.Family, cancellationToken);
+        }
 
         var uri = new Uri(Configuration["ZIRALINK_REDIRECTURI"]!);
         httpContextAccessor.HttpContext.Response.Redirect($"{uri}?access_token={tokenp}", true);
