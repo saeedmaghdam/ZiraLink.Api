@@ -1,0 +1,89 @@
+version: '3.7'
+
+services:
+  api:
+    image: ziralink.api
+    container_name: ziralink-api
+    build:
+      context: ./
+      dockerfile: ./src/ZiraLink.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Docker"
+      # ZIRALINK_CONNECTIONSTRINGS_DB: Data Source=mssql,1433;Initial Catalog=ziralink;User ID=sa;Password=Abcd@123456
+      ZIRALINK_CONNECTIONSTRINGS_DB: "Data Source=/app/data/database.db"
+      ZIRALINK_CONNECTIONSTRINGS_REDIS: "redis:6379"
+      ZIRALINK_REDIS_PASSWORD: ""
+      ZIRALINK_URL_IDS: "https://ids.ziralink.com:5001"
+      ZIRALINK_REDIRECTURI: "http://localhost:3000/signin-result"
+      ASPNETCORE_URLS: "https://+:6001;http://+:6000"
+      ASPNETCORE_HTTPS_PORT: "6001"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "zira_cert"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/app/server.pfx"
+    ports:
+      - "6000:6000"
+      - "6001:6001"
+    networks:
+      - net
+    extra_hosts:
+    - "api.ziralink.com:127.0.0.1"
+    links:
+      - "ids:ids.ziralink.com"
+    volumes:
+      - ziralink-api-data:/app/data
+    depends_on:
+      - ids
+      - redis
+  ids:
+    image: ziralink.ids
+    container_name: ziralink-ids
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Docker"
+      # ZIRALINK_CONNECTIONSTRINGS_DB: Data Source=mssql,1433;Initial Catalog=ziralink;User ID=sa;Password=Abcd@123456
+      ZIRALINK_CONNECTIONSTRINGS_DB: "Data Source=/app/data/database.db"
+      ASPNETCORE_URLS: "https://+:5001;http://+:5000"
+      ASPNETCORE_HTTPS_PORT: "5001"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "zira_cert"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/app/server.pfx"
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    networks:
+      net:
+        # ipv4_address: 172.20.0.2
+    extra_hosts:
+    - "ids.ziralink.com:127.0.0.1"
+    volumes:
+      - ziralink-ids-data:/app/data
+  redis:
+    image: bitnami/redis:7.0.7
+    container_name: ziralink-redis
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    networks:
+      - net
+    volumes:
+      - redis-data:/bitnami/redis/data/
+  # mssql:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   container_name: mssql-container
+  #   environment:
+  #     MSSQL_SA_PASSWORD: Abcd@123456
+  #     ACCEPT_EULA: Y
+  #   ports:
+  #     - "1533:1433"
+  #   networks:
+  #     - net
+  #   volumes:
+  #     - mssql-data:/var/opt/mssql
+
+networks:
+  net:
+    # driver: bridge
+    # ipam:
+    #   config:
+    #     - subnet: 172.20.0.0/24
+
+volumes:
+  ziralink-api-data: 
+  ziralink-ids-data: 
+  redis-data: 
