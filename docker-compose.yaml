@@ -14,7 +14,8 @@ services:
       ZIRALINK_CONNECTIONSTRINGS_REDIS: "redis:6379"
       ZIRALINK_REDIS_PASSWORD: ""
       ZIRALINK_URL_IDS: "https://ids.ziralink.com:5001"
-      ZIRALINK_REDIRECTURI: "https://ziralink.com:3001/signin-result"
+      ZIRALINK_REDIRECTURI: "https://ziralink.com:4001/signin-result"
+      # ZIRALINK_REDIRECTURI: "http://localhost:3000/signin-result"
       ASPNETCORE_URLS: "https://+:6001;http://+:6000"
       ASPNETCORE_HTTPS_PORT: "6001"
       ASPNETCORE_Kestrel__Certificates__Default__Password: "zira_cert"
@@ -67,8 +68,8 @@ services:
     image: ziralink.web
     container_name: ziralink-web
     ports:
-      - "3000:80"
-      - "3001:443"
+      - "4000:80"
+      - "4001:443"
   # mssql:
   #   image: mcr.microsoft.com/mssql/server:2022-latest
   #   container_name: mssql-container
