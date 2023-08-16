@@ -22,6 +22,11 @@ namespace ZiraLink.Api.Application
             return await _dbContext.Projects.Include(x => x.Customer).AsNoTracking().Where(x => x.Customer.Id == customerId).ToListAsync(cancellationToken);
         }
 
+        public async Task<List<Project>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            return await _dbContext.Projects.Include(x => x.Customer).AsNoTracking().ToListAsync(cancellationToken);
+        }
+
         public async Task<Project> GetByIdAsync(long id, long customerId, CancellationToken cancellationToken)
         {
             var project = await _dbContext.Projects.Include(x => x.Customer).AsNoTracking().SingleOrDefaultAsync(x => x.Id == id && x.Customer.Id == customerId, cancellationToken);

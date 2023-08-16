@@ -36,6 +36,13 @@ namespace ZiraLink.Api.Controllers
             return ApiResponse<List<Project>>.CreateSuccessResponse(result);
         }
 
+        [HttpGet("All")]
+        public async Task<ApiResponse<List<Project>>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            var result = await _projectService.GetAllAsync(cancellationToken);
+            return ApiResponse<List<Project>>.CreateSuccessResponse(result);
+        }
+
         [HttpGet("{id}")]
         public async Task<ApiResponse<Project>> GetByIdAsync([FromRoute] long id, CancellationToken cancellationToken)
         {
