@@ -36,6 +36,7 @@ services:
       - ids
       - redis
       - rabbitmq
+      - bind9
   ids:
     image: ziralink.ids
     container_name: ziralink-ids
@@ -87,6 +88,18 @@ services:
       - net
     volumes:
       - rabbitmq-data:/bitnami/rabbitmq/mnesia
+  bind9:
+    image: ziralink-bind9
+    container_name: ziralink-bind9
+    build:
+      context: ./configs/bind9/
+      dockerfile: ./Dockerfile
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "953:953"
+    networks:
+      - net
   # mssql:
   #   image: mcr.microsoft.com/mssql/server:2022-latest
   #   container_name: mssql-container
