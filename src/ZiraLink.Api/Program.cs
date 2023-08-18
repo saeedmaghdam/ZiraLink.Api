@@ -121,6 +121,7 @@ builder.Services.AddAuthentication(options =>
             });
 
 builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddSingleton<IBus, Bus>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();

@@ -11,6 +11,7 @@ services:
       ASPNETCORE_ENVIRONMENT: "Docker"
       # ZIRALINK_CONNECTIONSTRINGS_DB: Data Source=mssql,1433;Initial Catalog=ziralink;User ID=sa;Password=Abcd@123456
       ZIRALINK_CONNECTIONSTRINGS_DB: "Data Source=/app/data/database.db"
+      ZIRALINK_CONNECTIONSTRINGS_RABBITMQ: "amqp://user:Pass123$@rabbitmq:5672/"
       ZIRALINK_CONNECTIONSTRINGS_REDIS: "redis:6379"
       ZIRALINK_REDIS_PASSWORD: ""
       ZIRALINK_URL_IDS: "https://ids.ziralink.com:5001"
@@ -34,6 +35,7 @@ services:
     depends_on:
       - ids
       - redis
+      - rabbitmq
   ids:
     image: ziralink.ids
     container_name: ziralink-ids
@@ -72,6 +74,19 @@ services:
       - "4001:443"
     volumes:
       - ziralink-web-data:/var/log/nginx/
+  rabbitmq:
+    image: bitnami/rabbitmq:latest
+    container_name: ziralink-rabbitmq
+    environment:
+      RABBITMQ_USERNAME: "user"
+      RABBITMQ_PASSWORD: "Pass123$"
+    ports:
+      - "5772:5672"
+      - "15772:15672"
+    networks:
+      - net
+    volumes:
+      - rabbitmq-data:/bitnami/rabbitmq/mnesia
   # mssql:
   #   image: mcr.microsoft.com/mssql/server:2022-latest
   #   container_name: mssql-container
@@ -97,3 +112,4 @@ volumes:
   ziralink-ids-data: 
   ziralink-web-data:
   redis-data: 
+  rabbitmq-data:

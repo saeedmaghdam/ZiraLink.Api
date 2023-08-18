@@ -10,11 +10,13 @@ namespace ZiraLink.Api.Application
     {
         private readonly ILogger<ProjectService> _logger;
         private readonly AppDbContext _dbContext;
+        private readonly IBus _bus;
 
-        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext)
+        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus)
         {
             _logger = logger;
             _dbContext = dbContext;
+            _bus = bus;
         }
 
         public async Task<List<Project>> GetAsync(long customerId, CancellationToken cancellationToken)
@@ -64,6 +66,7 @@ namespace ZiraLink.Api.Application
 
             await _dbContext.Projects.AddAsync(project, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
+            _bus.Publish("CUSTOMER_CREATED");
 
             return project.ViewId;
         }
@@ -76,6 +79,7 @@ namespace ZiraLink.Api.Application
 
             _dbContext.Projects.Remove(project);
             await _dbContext.SaveChangesAsync(cancellationToken);
+            _bus.Publish("CUSTOMER_DELETED");
         }
 
         public async Task PatchAsync(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
@@ -98,6 +102,7 @@ namespace ZiraLink.Api.Application
             project.State = state;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
+            _bus.Publish("CUSTOMER_PATCHED");
         }
     }
 }

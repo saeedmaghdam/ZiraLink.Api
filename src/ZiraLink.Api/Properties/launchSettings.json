@@ -18,6 +18,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ZIRALINK_CONNECTIONSTRINGS_DB": "database.md",
+        "ZIRALINK_CONNECTIONSTRINGS_RABBITMQ": "amqp://user:Pass123$@localhost:5772/",
         "ZIRALINK_CONNECTIONSTRINGS_REDIS": "localhost:6379",
         "ZIRALINK_REDIS_PASSWORD": "",
         "ZIRALINK_URL_IDS": "https://ids.ziralink.com:5001",
