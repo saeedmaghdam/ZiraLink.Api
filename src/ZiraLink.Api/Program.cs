@@ -32,7 +32,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001", "http://ziralink.com:3000", "https://ziralink.com:3001", "http://ziralink.com:4000", "https://ziralink.com:4001")
+            builder.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001", "http://ziralink.com:3000", "https://ziralink.com:3001", "http://ziralink.com:4000", "https://ziralink.com:4001", Configuration["ZIRALINK_WEB_URL"])
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()
