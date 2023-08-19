@@ -51,6 +51,10 @@ namespace ZiraLink.Api.Application
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
 
+            var isDomainExists = await _dbContext.Projects.AnyAsync(x => x.DomainType == domainType && x.Domain == domain, cancellationToken);
+            if (isDomainExists)
+                throw new ApplicationException("Domain already exists");
+
             var project = new Project
             {
                 ViewId = Guid.NewGuid(),
@@ -91,6 +95,13 @@ namespace ZiraLink.Api.Application
             var project = await _dbContext.Projects.SingleOrDefaultAsync(x => x.Id == id && x.CustomerId == customerId, cancellationToken);
             if (project == null)
                 throw new NotFoundException(nameof(Project), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(Project.Id), id) });
+
+            if (project.DomainType != domainType || project.Domain != domain)
+            {
+                var isDomainExists = await _dbContext.Projects.AnyAsync(x => x.DomainType == domainType && x.Domain == domain, cancellationToken);
+                if (isDomainExists)
+                    throw new ApplicationException("Domain already exists");
+            }
 
             if (!string.IsNullOrEmpty(title))
                 project.Title = title;
