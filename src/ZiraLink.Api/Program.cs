@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Reflection;
 using Duende.Bff.Yarp;
 using IdentityModel;
@@ -41,7 +40,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" ? $"Data Source={Path.Combine(pathToExe, "database.db")}" : Environment.GetEnvironmentVariable("ZIRALINK_CONNECTIONSTRINGS_DB");
+var connectionString = Configuration["ASPNETCORE_ENVIRONMENT"] == "Development" ? $"Data Source={Path.Combine(pathToExe, "database.db")}" : Configuration["ZIRALINK_CONNECTIONSTRINGS_DB"];
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
 //builder.Services.AddDbContext<AppDbContext>();
 
@@ -112,7 +111,7 @@ builder.Services.AddAuthentication(options =>
 
                 options.GetClaimsFromUserInfoEndpoint = true;
 
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
+                if (Configuration["ASPNETCORE_ENVIRONMENT"] != "Production")
                 {
                     HttpClientHandler handler = new HttpClientHandler();
                     //handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;

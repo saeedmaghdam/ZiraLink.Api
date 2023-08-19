@@ -1,14 +1,19 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 
 namespace ZiraLink.Api.Application
 {
     public class Bus : IBus
     {
+        private readonly IConfiguration _configuration;
+
+        public Bus(IConfiguration configuration) => _configuration = configuration;
+
         public void Publish(string message)
         {
             var factory = new ConnectionFactory();
-            factory.Uri = new Uri(Environment.GetEnvironmentVariable("ZIRALINK_CONNECTIONSTRINGS_RABBITMQ")!);
+            factory.Uri = new Uri(_configuration["ZIRALINK_CONNECTIONSTRINGS_RABBITMQ"]!);
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
