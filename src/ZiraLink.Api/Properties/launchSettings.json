@@ -24,7 +24,7 @@
         "ZIRALINK_URL_IDS": "https://ids.ziralink.com:5001",
         //"ZIRALINK_URL_IDS": "https://localhost:5101/",
         "ZIRALINK_REDIRECTURI": "http://localhost:3000/signin-result",
-        "ZIRALINK_WEB_URL": "http://localhost:3000/"
+        "ZIRALINK_WEB_URL": "http://localhost:3000"
         //"ASPNETCORE_URLS": "https://+:443;http://+:80",
         //"ASPNETCORE_HTTPS_PORT": "443",
         //"ASPNETCORE_Kestrel__Certificates__Default__Password": "zira_cert",
