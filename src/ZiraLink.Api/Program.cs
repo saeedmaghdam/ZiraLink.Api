@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using StackExchange.Redis;
 using ZiraLink.Api;
 using ZiraLink.Api.Application;
@@ -25,6 +26,11 @@ IConfiguration Configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", false, true)
     .AddEnvironmentVariables()
     .Build();
+
+Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddCors(options =>
@@ -165,7 +171,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
-var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
+app.Logger.LogInformation("Test");
+
+ var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
 context.Database.Migrate();
 
 app.Use((context, next) =>
