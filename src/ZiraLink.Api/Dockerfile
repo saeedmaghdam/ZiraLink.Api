@@ -25,19 +25,11 @@ COPY --from=publish /app/publish .
 
 RUN apt-get update && apt-get install -y ca-certificates grep netcat-openbsd iputils-ping iproute2
 
-# COPY certs/certificate.crt /usr/local/share/ca-certificates/custom-certificate.crt
-# RUN update-ca-certificates
-
-#RUN apt-get update && apt-get install -y openssl
-#COPY certs/server.key certs/server.crt /etc/ssl/private/
-
 COPY ./certs/server.pfx /app/server.pfx
 
 COPY ./certs/ca.crt /usr/local/share/ca-certificates/ca.crt
 COPY ./certs/server.crt /usr/local/share/ca-certificates/server.crt
 COPY ./certs/server.key /usr/local/share/ca-certificates/server.key
 RUN update-ca-certificates
-
-# RUN echo "127.0.0.1 ids.ziralink.com" >> /etc/hosts
 
 ENTRYPOINT ["dotnet", "ZiraLink.Api.dll"]
