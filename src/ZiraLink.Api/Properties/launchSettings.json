@@ -19,7 +19,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ZIRALINK_CONNECTIONSTRINGS_DB": "Data Source=database.md",
         "ZIRALINK_CONNECTIONSTRINGS_RABBITMQ": "amqp://user:Pass123$@localhost:5772/",
-        "ZIRALINK_CONNECTIONSTRINGS_REDIS": "localhost:6379",
+        "ZIRALINK_CONNECTIONSTRINGS_REDIS": "localhost:6479",
         "ZIRALINK_REDIS_PASSWORD": "",
         "ZIRALINK_URL_IDS": "https://ids.ziralink.local:5001",
         "ZIRALINK_REDIRECTURI": "https://ziralink.local:4001/signin-result",
