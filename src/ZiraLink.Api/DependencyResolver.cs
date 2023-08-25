@@ -17,6 +17,7 @@ using StackExchange.Redis;
 
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Services;
+using ZiraLink.Api.Application.Tools;
 using ZiraLink.Api.Framework;
 
 namespace ZiraLink.Api;
@@ -30,6 +31,7 @@ public static class DependencyResolver
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<IBus, Bus>();
+        services.AddSingleton<IHttpTools, HttpTools>();
         // Add services to the container.
         services.AddCors(options =>
         {
