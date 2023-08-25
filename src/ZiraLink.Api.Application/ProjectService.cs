@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZiraLink.Api.Application.Exceptions;
+using ZiraLink.Api.Application.Tools;
 using ZiraLink.Domain;
 using ZiraLink.Domain.Enums;
 
@@ -11,12 +12,14 @@ namespace ZiraLink.Api.Application
         private readonly ILogger<ProjectService> _logger;
         private readonly AppDbContext _dbContext;
         private readonly IBus _bus;
+        private readonly ITools _tools;
 
-        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus)
+        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus, ITools tools)
         {
             _logger = logger;
             _dbContext = dbContext;
             _bus = bus;
+            _tools = tools;
         }
 
         public async Task<List<Project>> GetAsync(long customerId, CancellationToken cancellationToken)
@@ -47,12 +50,16 @@ namespace ZiraLink.Api.Application
             if (string.IsNullOrEmpty(internalUrl))
                 throw new ArgumentNullException(nameof(internalUrl));
 
+
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
 
             var isDomainExists = await _dbContext.Projects.AnyAsync(x => x.DomainType == domainType && x.Domain == domain, cancellationToken);
             if (isDomainExists)
+                throw new ApplicationException("Domain already exists");
+
+            if (!_tools.CheckDomainExists(internalUrl).Result)
                 throw new ApplicationException("Domain already exists");
 
             var project = new Project
@@ -102,6 +109,9 @@ namespace ZiraLink.Api.Application
                 if (isDomainExists)
                     throw new ApplicationException("Domain already exists");
             }
+
+            if (!_tools.CheckDomainExists(internalUrl).Result)
+                throw new ApplicationException("Domain already exists");
 
             if (!string.IsNullOrEmpty(title))
                 project.Title = title;

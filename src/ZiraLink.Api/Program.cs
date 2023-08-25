@@ -14,6 +14,7 @@ using StackExchange.Redis;
 using ZiraLink.Api;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Exceptions;
+using ZiraLink.Api.Application.Tools;
 using ZiraLink.Api.Framework;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -125,7 +126,9 @@ builder.Services.AddAuthentication(options =>
                 }
             });
 
+
 builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddSingleton<ITools, Tools>();
 builder.Services.AddSingleton<IBus, Bus>();
 builder.Services.AddHttpContextAccessor();
 
