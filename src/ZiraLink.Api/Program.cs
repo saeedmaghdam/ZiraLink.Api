@@ -171,7 +171,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
-
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 app.Logger.LogInformation("Test");

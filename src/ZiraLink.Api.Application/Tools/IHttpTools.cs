@@ -9,5 +9,6 @@ namespace ZiraLink.Api.Application.Tools
     public interface IHttpTools
     {
         Task<bool> CheckDomainExists(string domainUrl);
+        Task<bool> PingDomain(string simpleDomain);
     }
 }
