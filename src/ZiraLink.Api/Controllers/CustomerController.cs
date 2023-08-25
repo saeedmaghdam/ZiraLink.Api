@@ -9,9 +9,9 @@ using ZiraLink.Api.Models;
 using System.Text.Json;
 using ZiraLink.Api.Models.Customer;
 using ZiraLink.Api.Application.Framework;
-using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Exceptions;
 using ZiraLink.Domain;
+using ZiraLink.Api.Application.Services;
 
 namespace ZiraLink.Api.Controllers
 {

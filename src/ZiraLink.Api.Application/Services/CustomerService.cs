@@ -7,7 +7,7 @@ using IdentityModel.Client;
 using ZiraLink.Api.Application.Framework;
 using Microsoft.Extensions.Configuration;
 
-namespace ZiraLink.Api.Application
+namespace ZiraLink.Api.Application.Services
 {
     public class CustomerService : ICustomerService
     {

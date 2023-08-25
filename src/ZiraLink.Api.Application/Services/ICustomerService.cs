@@ -1,6 +1,6 @@
 ﻿using ZiraLink.Domain;
 
-namespace ZiraLink.Api.Application
+namespace ZiraLink.Api.Application.Services
 {
     public interface ICustomerService
     {
