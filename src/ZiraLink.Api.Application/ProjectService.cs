@@ -12,14 +12,14 @@ namespace ZiraLink.Api.Application
         private readonly ILogger<ProjectService> _logger;
         private readonly AppDbContext _dbContext;
         private readonly IBus _bus;
-        private readonly IHttpTools _tools;
+        private readonly IHttpTools _httpTools;
 
-        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus, IHttpTools tools)
+        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus, IHttpTools httpTools)
         {
             _logger = logger;
             _dbContext = dbContext;
             _bus = bus;
-            _tools = tools;
+            _httpTools = httpTools;
         }
 
         public async Task<List<Project>> GetAsync(long customerId, CancellationToken cancellationToken)
@@ -59,8 +59,8 @@ namespace ZiraLink.Api.Application
             if (isDomainExists)
                 throw new ApplicationException("Domain already exists");
 
-            if (!_tools.CheckDomainExists(internalUrl).Result)
-                throw new ApplicationException("Domain already exists");
+            if (!await _httpTools.CheckDomainExists(internalUrl))
+                throw new ApplicationException("Public domain is not allowed");
 
             var project = new Project
             {
@@ -110,8 +110,8 @@ namespace ZiraLink.Api.Application
                     throw new ApplicationException("Domain already exists");
             }
 
-            if (!_tools.CheckDomainExists(internalUrl).Result)
-                throw new ApplicationException("Domain already exists");
+            if (!await _httpTools.CheckDomainExists(internalUrl))
+                throw new ApplicationException("Public domain is not allowed");
 
             if (!string.IsNullOrEmpty(title))
                 project.Title = title;

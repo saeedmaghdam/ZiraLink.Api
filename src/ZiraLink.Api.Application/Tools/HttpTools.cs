@@ -16,7 +16,7 @@ namespace ZiraLink.Api.Application.Tools
         private readonly IHttpClientFactory _httpClientFactory;
         public HttpTools(IHttpClientFactory httpClientFactory)
         {
-            _httpClientFactory = httpClientFactory; 
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<bool> CheckDomainExists(string domainUrl)
@@ -27,17 +27,16 @@ namespace ZiraLink.Api.Application.Tools
                 using (var response = await httpClient.GetAsync(domainUrl, HttpCompletionOption.ResponseHeadersRead))
                 {
                     response.EnsureSuccessStatusCode();
-                    var stream = await response.Content.ReadAsStreamAsync();
-                } 
+                    var urlData = await response.Content.ReadAsStringAsync();
+                    return false;
+                }
             }
-            catch (Exception)
-            { 
-            }
+            catch { }
 
             return await PingDomain(domainUrl);
-             
+
         }
-        
+
         public async Task<bool> PingDomain(string domainUrl)
         {
             domainUrl = domainUrl.Replace("https://", "").Replace("http://", "");
@@ -46,18 +45,16 @@ namespace ZiraLink.Api.Application.Tools
                 Ping ping = new Ping();
                 for (int i = 0; i < 2; i++)
                 {
-                    var response = await Task.Run(() => ping.Send(domainUrl, 1200));
+                    var response = await ping.SendPingAsync(domainUrl, 1200);
                     if (response.Status == IPStatus.Success)
                     {
                         return false;
                     }
-                } 
+                }
             }
-            catch (Exception)
-            {
-            }
+            catch { }
 
             return true;
-        } 
+        }
     }
 }
