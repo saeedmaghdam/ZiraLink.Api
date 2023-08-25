@@ -150,5 +150,7 @@ public static class DependencyResolver
             });
         });
 
+        services.AddHttpClient();
+
     }
 }
