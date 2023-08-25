@@ -14,6 +14,7 @@ using StackExchange.Redis;
 using ZiraLink.Api;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Exceptions;
+using ZiraLink.Api.Application.Services;
 using ZiraLink.Api.Framework;
 
 var builder = WebApplication.CreateBuilder(args);

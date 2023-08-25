@@ -1,7 +1,7 @@
 ﻿using ZiraLink.Domain;
 using ZiraLink.Domain.Enums;
 
-namespace ZiraLink.Api.Application
+namespace ZiraLink.Api.Application.Services
 {
     public interface IProjectService
     {

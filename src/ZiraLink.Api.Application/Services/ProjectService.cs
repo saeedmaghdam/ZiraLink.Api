@@ -4,7 +4,7 @@ using ZiraLink.Api.Application.Exceptions;
 using ZiraLink.Domain;
 using ZiraLink.Domain.Enums;
 
-namespace ZiraLink.Api.Application
+namespace ZiraLink.Api.Application.Services
 {
     public class ProjectService : IProjectService
     {
