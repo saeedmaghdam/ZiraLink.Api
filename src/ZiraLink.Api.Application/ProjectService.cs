@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ZiraLink.Api.Application.Exceptions;
+using ZiraLink.Api.Application.Tools;
 using ZiraLink.Domain;
 using ZiraLink.Domain.Enums;
 
@@ -11,12 +12,14 @@ namespace ZiraLink.Api.Application
         private readonly ILogger<ProjectService> _logger;
         private readonly AppDbContext _dbContext;
         private readonly IBus _bus;
+        private readonly IHttpTools _httpTools;
 
-        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus)
+        public ProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus, IHttpTools httpTools)
         {
             _logger = logger;
             _dbContext = dbContext;
             _bus = bus;
+            _httpTools = httpTools;
         }
 
         public async Task<List<Project>> GetAsync(long customerId, CancellationToken cancellationToken)
@@ -47,6 +50,7 @@ namespace ZiraLink.Api.Application
             if (string.IsNullOrEmpty(internalUrl))
                 throw new ArgumentNullException(nameof(internalUrl));
 
+
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
@@ -54,6 +58,9 @@ namespace ZiraLink.Api.Application
             var isDomainExists = await _dbContext.Projects.AnyAsync(x => x.DomainType == domainType && x.Domain == domain, cancellationToken);
             if (isDomainExists)
                 throw new ApplicationException("Domain already exists");
+
+            if (!await _httpTools.CheckDomainExists(internalUrl))
+                throw new ApplicationException("Public domain is not allowed");
 
             var project = new Project
             {
@@ -102,6 +109,9 @@ namespace ZiraLink.Api.Application
                 if (isDomainExists)
                     throw new ApplicationException("Domain already exists");
             }
+
+            if (!await _httpTools.CheckDomainExists(internalUrl))
+                throw new ApplicationException("Public domain is not allowed");
 
             if (!string.IsNullOrEmpty(title))
                 project.Title = title;

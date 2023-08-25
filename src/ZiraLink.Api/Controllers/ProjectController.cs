@@ -66,7 +66,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ApiDefaultResponse> CreateAsync([FromRoute] long id, CancellationToken cancellationToken)
+        public async Task<ApiDefaultResponse> DeleteAsync([FromRoute] long id, CancellationToken cancellationToken)
         {
             var customer = await _sessionService.GetCurrentCustomer(cancellationToken);
             if (customer == null)
