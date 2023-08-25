@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZiraLink.Api.Application.Tools
 {
-    public interface ITools
+    public interface IHttpTools
     {
         Task<bool> CheckDomainExists(string domainUrl);
     }
