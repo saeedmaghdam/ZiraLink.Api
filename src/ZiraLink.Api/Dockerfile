@@ -6,8 +6,6 @@ EXPOSE 6001
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS restore
 WORKDIR /src
-RUN pwd
-RUN ls -la
 COPY ["nuget.config", "."]
 COPY ["./src/ZiraLink.Api/ZiraLink.Api.csproj", "./src/ZiraLink.Api/"]
 RUN dotnet restore "./src/ZiraLink.Api/ZiraLink.Api.csproj"
