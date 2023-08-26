@@ -1,25 +1,16 @@
-﻿
-
-using System.IdentityModel.Tokens.Jwt;
-
+﻿using System.IdentityModel.Tokens.Jwt;
 using Duende.Bff.Yarp;
-
 using IdentityModel;
-
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-
 using StackExchange.Redis;
-
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Services;
 using ZiraLink.Api.Application.Tools;
 using ZiraLink.Api.Framework;
-
 namespace ZiraLink.Api;
 
 public static class DependencyResolver
@@ -65,9 +56,6 @@ public static class DependencyResolver
         JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
         services.AddAuthentication(options =>
         {
-            //options.DefaultScheme = "Cookies";
-            //options.DefaultChallengeScheme = "oidc";
-            //options.DefaultSignOutScheme = "oidc";
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = "oidc";
             options.DefaultSignOutScheme = "oidc";
@@ -116,7 +104,6 @@ public static class DependencyResolver
                         if (configuration["ASPNETCORE_ENVIRONMENT"] != "Production")
                         {
                             HttpClientHandler handler = new HttpClientHandler();
-                            //handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
                             options.BackchannelHttpHandler = handler;
                         }
                     });
