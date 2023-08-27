@@ -9,7 +9,8 @@ namespace ZiraLink.Api.HostingExtensions
     {
         public static async Task InitializeTestEnvironmentAsync(this WebApplication app)
         {
-            var appDbContext = app.Services.GetRequiredService<AppDbContext>();
+            using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            using var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
             var customer = await appDbContext.Customers.FirstOrDefaultAsync(x => x.Username == "logon", cancellationTokenSource.Token);
@@ -77,7 +78,8 @@ namespace ZiraLink.Api.HostingExtensions
                 });
             }
 
-            await appDbContext.SaveChangesAsync(cancellationTokenSource.Token);
+            if (appDbContext.ChangeTracker.HasChanges())
+                await appDbContext.SaveChangesAsync(cancellationTokenSource.Token);
         }
     }
 }
