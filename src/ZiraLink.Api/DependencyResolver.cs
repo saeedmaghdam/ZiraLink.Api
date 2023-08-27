@@ -29,7 +29,7 @@ public static class DependencyResolver
             options.AddPolicy("AllowSpecificOrigins",
                 builder =>
                 {
-                    builder.WithOrigins(configuration["ZIRALINK_WEB_URL"]!)
+                    builder.WithOrigins(new Uri(configuration["ZIRALINK_WEB_URL"]!).ToString())
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()
@@ -64,7 +64,7 @@ public static class DependencyResolver
                     .AddJwtBearer("Bearer", options =>
                     {
                         options.RequireHttpsMetadata = false;
-                        options.Authority = configuration["ZIRALINK_URL_IDS"]!;
+                        options.Authority = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         options.SaveToken = true;
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
@@ -88,7 +88,7 @@ public static class DependencyResolver
                     {
                         options.RequireHttpsMetadata = false;
                         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                        options.Authority = configuration["ZIRALINK_URL_IDS"]!;
+                        options.Authority = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         options.ClientId = "bff";
                         options.ClientSecret = "secret";
                         options.ResponseType = OidcConstants.ResponseTypes.Code;

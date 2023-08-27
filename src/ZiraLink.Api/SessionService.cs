@@ -35,8 +35,8 @@ namespace ZiraLink.Api
             var userId = _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "sub");
 
             var token = await _tokenService.GetTokenBySubAsync(userId.Value);
-            Uri baseUri = new Uri(_configuration["ZIRALINK_URL_IDS"]);
-            Uri uri = new Uri(baseUri, "connect/userinfo");
+            var baseUri = new Uri(_configuration["ZIRALINK_URL_IDS"]!);
+            var uri = new Uri(baseUri, "connect/userinfo");
             var userInfoRequest = new UserInfoRequest
             {
                 Address = uri.ToString(),
