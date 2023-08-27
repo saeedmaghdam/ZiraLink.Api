@@ -19,6 +19,7 @@ namespace ZiraLink.Tests.Tools
 
         public static DbContextOptions<AppDbContext>? contextOptions;
         public static AppDbContext? dbContext;
+        public static long customerId = 1;
 
         /// <summary>
         /// Initialization
@@ -44,7 +45,7 @@ namespace ZiraLink.Tests.Tools
                 new Project {
                     Id = 1,
                     ViewId = new Guid(),
-                    CustomerId = 1,
+                    CustomerId = customerId,
                     Title="Test",
                     DomainType = Domain.Enums.DomainType.Default,
                     Domain = "Test",

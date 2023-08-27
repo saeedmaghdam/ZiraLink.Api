@@ -12,6 +12,9 @@ using Moq;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Services;
 using ZiraLink.Api.Application.Tools;
+using ZiraLink.Api.Models.Project.InputModels;
+using ZiraLink.Domain;
+using ZiraLink.Tests.TestData;
 using ZiraLink.Tests.Tools;
 
 namespace ZiraLink.Tests.Services
@@ -32,11 +35,15 @@ namespace ZiraLink.Tests.Services
             _mockIHttpTools = new Mock<IHttpTools>();
             _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools.dbContext, _mockIBus.Object, _mockIHttpTools.Object);
         }
-        [Fact]
-        public async Task Test1()
+       
+        [Theory]
+        [MemberData(nameof(ProjectService_TestData.SetDataFor_CreateProject_WithEverythingIsOk), MemberType = typeof(ProjectService_TestData))]
+        public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(CreateProjectInputModel requestData)
         {
-            var a = await _projectService.GetAsync(1, CancellationToken.None);
-            Assert.True(a != null);
+            var response = await _projectService.CreateAsync(TestTools.customerId, requestData.Title, requestData.DomainType, requestData.Domain, requestData.InternalUrl, requestData.State, CancellationToken.None);
+             
+            Assert.NotEqual("", response.ToString());
         }
+
     }
 }
