@@ -14,6 +14,7 @@ using ZiraLink.Api.Application.Services;
 using ZiraLink.Api.Application.Tools;
 using ZiraLink.Api.Models.Project.InputModels;
 using ZiraLink.Domain;
+using ZiraLink.Domain.Enums;
 using ZiraLink.Tests.TestData;
 using ZiraLink.Tests.Tools;
 
@@ -25,22 +26,23 @@ namespace ZiraLink.Tests.Services
 
         private readonly Mock<ILogger<ProjectService>>? _mockILoggerProjectService;
         private readonly Mock<IBus>? _mockIBus;
-        private readonly Mock<IHttpTools>? _mockIHttpTools;
+        private readonly Mock<IHttpClientFactory>? _mockIHttpClientFactory;
          
         public ProjectService_UnitTest()
         {
             TestTools.Initialize();
             _mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
-            _mockIBus = new Mock<IBus>(); 
-            _mockIHttpTools = new Mock<IHttpTools>();
-            _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools.dbContext, _mockIBus.Object, _mockIHttpTools.Object);
+            _mockIBus = new Mock<IBus>();
+            _mockIHttpClientFactory = new Mock<IHttpClientFactory>();
+            HttpTools httpTools = new HttpTools(_mockIHttpClientFactory.Object);
+            _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools._dbContext, _mockIBus.Object, httpTools);
         }
        
         [Theory]
-        [MemberData(nameof(ProjectService_TestData.SetDataFor_CreateProject_WithEverythingIsOk), MemberType = typeof(ProjectService_TestData))]
-        public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(CreateProjectInputModel requestData)
+        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://testziralinkdomain.com", ProjectState.Active)]
+        public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
-            var response = await _projectService.CreateAsync(TestTools.customerId, requestData.Title, requestData.DomainType, requestData.Domain, requestData.InternalUrl, requestData.State, CancellationToken.None);
+            var response = await _projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None);
              
             Assert.NotEqual("", response.ToString());
         }

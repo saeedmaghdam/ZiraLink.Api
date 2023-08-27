@@ -18,7 +18,7 @@ namespace ZiraLink.Tests.Tools
     {
 
         public static DbContextOptions<AppDbContext>? contextOptions;
-        public static AppDbContext? dbContext;
+        public static AppDbContext? _dbContext;
         public static long customerId = 1;
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace ZiraLink.Tests.Tools
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             dbContextOptionsBuilder.UseInMemoryDatabase("AppDbContext");
             contextOptions = dbContextOptionsBuilder.Options;
-            dbContext = new AppDbContext(contextOptions);
+            _dbContext = new AppDbContext(contextOptions);
             SeedData();
         }
 
@@ -40,9 +40,22 @@ namespace ZiraLink.Tests.Tools
         {
 
             // Add new customer
+            var customer = new Customer
+            {
+                Id = customerId,
+                ViewId = Guid.NewGuid(),
+                Username = "TestUser",
+                Email = "TestUser@ZiraLink.com",
+                Name = "Test",
+                Family = "User",
+                ExternalId = "1"
+            };
+             _dbContext.Customers.Add(customer);
+             _dbContext.SaveChanges();
 
-            List<Project> projects = new() {
-                new Project {
+
+            // Add new customer
+            Project project =  new Project {
                     Id = 1,
                     ViewId = new Guid(),
                     CustomerId = customerId,
@@ -53,12 +66,10 @@ namespace ZiraLink.Tests.Tools
                     DateCreated = DateTime.Now,
                     DateUpdated = DateTime.Now,
                     State  = ProjectState.Active,
-
-    }
     };
-            dbContext.Projects.AddRange(projects);
+            _dbContext.Projects.Add(project);
 
-            dbContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
     }
