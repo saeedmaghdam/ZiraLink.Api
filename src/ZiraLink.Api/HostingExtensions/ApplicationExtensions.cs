@@ -15,14 +15,16 @@ namespace ZiraLink.Api.HostingExtensions
             var customer = await appDbContext.Customers.FirstOrDefaultAsync(x => x.Username == "logon", cancellationTokenSource.Token);
             if (customer == null)
             {
+                var customerExternalId = "c2bacf97-47ab-452d-ba04-937a001f72ac";
+
                 customer = new Customer
                 {
-                    Username = "logon",
+                    Username = "test",
                     Name = "Test",
                     Family = "User",
                     Email = "ziralink@aghdam.nl",
                     ViewId = Guid.NewGuid(),
-                    ExternalId = Guid.Parse("c2bacf97-47ab-452d-ba04-937a001f72ac").ToString()
+                    ExternalId = Guid.Parse(customerExternalId).ToString()
                 };
                 appDbContext.Customers.Add(customer);
             }
