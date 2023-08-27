@@ -1,22 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
-using Duende.Bff.Yarp;
-using IdentityModel;
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Serilog;
-using StackExchange.Redis;
 using ZiraLink.Api;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Exceptions;
 using ZiraLink.Api.Application.Services;
-using ZiraLink.Api.Application.Tools;
 using ZiraLink.Api.Framework;
+using ZiraLink.Api.HostingExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,10 +41,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
-app.Logger.LogInformation("Test");
-
- var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
+var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
 context.Database.Migrate();
+
+if (Configuration["ASPNETCORE_ENVIRONMENT"] == "Test")
+    await app.InitializeTestEnvironmentAsync();
 
 app.Use((context, next) =>
 {
