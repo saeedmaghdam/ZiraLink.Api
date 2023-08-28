@@ -116,6 +116,27 @@ public static class DependencyResolver
                             ValidateAudience = false
                         };
 
+                        if (configuration["ASPNETCORE_ENVIRONMENT"] == "Test")
+                        {
+                            var handler = new HttpClientHandler();
+                            handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
+                            {
+                                string expectedThumbprint = "10CE57B0083EBF09ED8E53CF6AC33D49B3A76414";
+                                if (certificate!.GetCertHashString() == expectedThumbprint)
+                                    return true;
+
+                                if (sslPolicyErrors == SslPolicyErrors.None)
+                                    return true;
+
+                                return false;
+                            };
+                            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                            handler.SslProtocols = SslProtocols.Tls12;
+                            handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "localhost", "server.pfx"), "son"));
+
+                            options.BackchannelHttpHandler = handler;
+                        }
+
                         var db = connectionMultiplexer.GetDatabase(10);
 
                         options.Events = new JwtBearerEvents
@@ -146,9 +167,24 @@ public static class DependencyResolver
 
                         options.GetClaimsFromUserInfoEndpoint = true;
 
-                        if (configuration["ASPNETCORE_ENVIRONMENT"] != "Production")
+                        if (configuration["ASPNETCORE_ENVIRONMENT"] == "Test")
                         {
-                            HttpClientHandler handler = new HttpClientHandler();
+                            var handler = new HttpClientHandler();
+                            handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
+                            {
+                                string expectedThumbprint = "10CE57B0083EBF09ED8E53CF6AC33D49B3A76414";
+                                if (certificate!.GetCertHashString() == expectedThumbprint)
+                                    return true;
+
+                                if (sslPolicyErrors == SslPolicyErrors.None)
+                                    return true;
+
+                                return false;
+                            };
+                            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                            handler.SslProtocols = SslProtocols.Tls12;
+                            handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "localhost", "server.pfx"), "son"));
+
                             options.BackchannelHttpHandler = handler;
                         }
                     });
