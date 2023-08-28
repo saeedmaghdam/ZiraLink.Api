@@ -1,4 +1,5 @@
 ﻿using System.Net.NetworkInformation;
+using ZiraLink.Api.Application.Enums;
 
 namespace ZiraLink.Api.Application.Tools
 {
@@ -12,7 +13,7 @@ namespace ZiraLink.Api.Application.Tools
 
         public async Task<bool> CheckDomainExists(string domainUrl)
         {
-            var httpClient = _httpClientFactory.CreateClient();
+            var httpClient = _httpClientFactory.CreateClient(NamedHttpClients.Default);
             try
             {
                 using (var response = await httpClient.GetAsync(domainUrl, HttpCompletionOption.ResponseHeadersRead))

@@ -2,6 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS base
 WORKDIR /app
+EXPOSE 6000
 EXPOSE 6001
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS restore
@@ -30,6 +31,9 @@ COPY ./certs/server.pfx /app/server.pfx
 COPY ./certs/ca.crt /usr/local/share/ca-certificates/ca.crt
 COPY ./certs/server.crt /usr/local/share/ca-certificates/server.crt
 COPY ./certs/server.key /usr/local/share/ca-certificates/server.key
+COPY ./certs/localhost/ca.crt /usr/local/share/ca-certificates/ca-localhost.crt
+COPY ./certs/localhost/server.crt /usr/local/share/ca-certificates/server-localhost.crt
+COPY ./certs/localhost/server.key /usr/local/share/ca-certificates/server-localhost.key
 RUN update-ca-certificates
 
 ENTRYPOINT ["dotnet", "ZiraLink.Api.dll"]

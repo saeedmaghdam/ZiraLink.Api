@@ -1,4 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using Duende.Bff.Yarp;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -8,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using ZiraLink.Api.Application;
+using ZiraLink.Api.Application.Enums;
 using ZiraLink.Api.Application.Services;
 using ZiraLink.Api.Application.Tools;
 using ZiraLink.Api.Framework;
@@ -17,6 +22,46 @@ public static class DependencyResolver
 {
     public static void Register(this IServiceCollection services, IConfiguration configuration, string pathToExe)
     {
+        if (configuration["ASPNETCORE_ENVIRONMENT"] == "Test")
+        {
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
+            {
+                string expectedThumbprint = "10CE57B0083EBF09ED8E53CF6AC33D49B3A76414";
+                if (certificate!.GetCertHashString() == expectedThumbprint)
+                    return true;
+
+                if (sslPolicyErrors == SslPolicyErrors.None)
+                    return true;
+
+                return false;
+            };
+
+            services.AddHttpClient(NamedHttpClients.Default).ConfigurePrimaryHttpMessageHandler(_ =>
+            {
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
+                {
+                    string expectedThumbprint = "10CE57B0083EBF09ED8E53CF6AC33D49B3A76414";
+                    if (certificate!.GetCertHashString() == expectedThumbprint)
+                        return true;
+
+                    if (sslPolicyErrors == SslPolicyErrors.None)
+                        return true;
+
+                    return false;
+                };
+                handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                handler.SslProtocols = SslProtocols.Tls12;
+                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "localhost", "server.pfx"), "son"));
+
+                return handler;
+            });
+        }
+        else
+        {
+            services.AddHttpClient(NamedHttpClients.Default);
+        }
+
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<ICustomerService, CustomerService>();
@@ -29,7 +74,7 @@ public static class DependencyResolver
             options.AddPolicy("AllowSpecificOrigins",
                 builder =>
                 {
-                    builder.WithOrigins(configuration["ZIRALINK_WEB_URL"]!)
+                    builder.WithOrigins(new Uri(configuration["ZIRALINK_WEB_URL"]!).ToString())
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()
@@ -64,7 +109,7 @@ public static class DependencyResolver
                     .AddJwtBearer("Bearer", options =>
                     {
                         options.RequireHttpsMetadata = false;
-                        options.Authority = configuration["ZIRALINK_URL_IDS"]!;
+                        options.Authority = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         options.SaveToken = true;
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
@@ -88,7 +133,7 @@ public static class DependencyResolver
                     {
                         options.RequireHttpsMetadata = false;
                         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                        options.Authority = configuration["ZIRALINK_URL_IDS"]!;
+                        options.Authority = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         options.ClientId = "bff";
                         options.ClientSecret = "secret";
                         options.ResponseType = OidcConstants.ResponseTypes.Code;
@@ -138,8 +183,5 @@ public static class DependencyResolver
         { jwtSecurityScheme, Array.Empty<string>() }
             });
         });
-
-        services.AddHttpClient();
-
     }
 }

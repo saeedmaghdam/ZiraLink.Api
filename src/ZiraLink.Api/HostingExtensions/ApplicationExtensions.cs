@@ -78,6 +78,22 @@ namespace ZiraLink.Api.HostingExtensions
                 });
             }
 
+            if (!await appDbContext.Projects.AnyAsync(x => x.DomainType == DomainType.Custom && x.Domain == "localhost:7101", cancellationTokenSource.Token))
+            {
+                appDbContext.Projects.Add(new Domain.Project
+                {
+                    ViewId = Guid.NewGuid(),
+                    Title = "Weather Forecasts",
+                    State = Domain.Enums.ProjectState.Active,
+                    InternalUrl = "https://localhost:9443",
+                    Customer = customer,
+                    DateCreated = DateTime.Now,
+                    DateUpdated = DateTime.Now,
+                    DomainType = DomainType.Custom,
+                    Domain = "localhost:7101"
+                });
+            }
+
             if (appDbContext.ChangeTracker.HasChanges())
                 await appDbContext.SaveChangesAsync(cancellationTokenSource.Token);
         }

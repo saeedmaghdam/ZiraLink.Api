@@ -14,10 +14,14 @@ namespace ZiraLink.Api.Application.Services
         private readonly AppDbContext _dbContext;
         private readonly IConfiguration _configuration;
 
+        private readonly Uri _idsUri;
+
         public CustomerService(AppDbContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _configuration = configuration;
+
+            _idsUri = new Uri(configuration["ZIRALINK_URL_IDS"]!);
         }
 
         public async Task<Customer> GetCustomerByExternalIdAsync(string externalId, CancellationToken cancellationToken)
@@ -82,7 +86,7 @@ namespace ZiraLink.Api.Application.Services
                 Family = family
             };
             var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
-            var baseUri = new Uri(_configuration["ZIRALINK_URL_IDS"]);
+            var baseUri = _idsUri;
             var uri = new Uri(baseUri, "User");
             var response = await client.PostAsync(uri.ToString(), content);
 
@@ -127,7 +131,7 @@ namespace ZiraLink.Api.Application.Services
                 NewPassword = newPassword
             };
             var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
-            var baseUri = new Uri(_configuration["ZIRALINK_URL_IDS"]);
+            var baseUri = _idsUri;
             var uri = new Uri(baseUri, "User/ChangePassword");
             var response = await client.PatchAsync(uri.ToString(), content);
 
@@ -158,7 +162,7 @@ namespace ZiraLink.Api.Application.Services
                 Family = family
             };
             var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
-            var baseUri = new Uri(_configuration["ZIRALINK_URL_IDS"]);
+            var baseUri = _idsUri;
             var uri = new Uri(baseUri, "User");
             var response = await client.PatchAsync(uri.ToString(), content);
 
@@ -176,7 +180,7 @@ namespace ZiraLink.Api.Application.Services
         private async Task<HttpClient> InitializeHttpClientAsync(CancellationToken cancellationToken)
         {
             var client = new HttpClient();
-            var disco = await client.GetDiscoveryDocumentAsync(_configuration["ZIRALINK_URL_IDS"], cancellationToken);
+            var disco = await client.GetDiscoveryDocumentAsync(_idsUri.ToString(), cancellationToken);
             if (disco.IsError)
                 throw new ApplicationException("Failed to get discivery document");
 

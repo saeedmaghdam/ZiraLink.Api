@@ -115,8 +115,9 @@ app.UseEndpoints(endpoints =>
             var _ = await customerService.CreateLocallyAsync(sub, customerProfile.Username, customerProfile.Email, customerProfile.Name, customerProfile.Family, cancellationToken);
         }
 
-        var uri = new Uri(Configuration["ZIRALINK_REDIRECTURI"]!);
-        httpContextAccessor.HttpContext.Response.Redirect($"{uri}?access_token={tokenp}", true);
+        var baseUri = new Uri(Configuration["ZIRALINK_REDIRECTURI"]!);
+        var uri = new Uri(baseUri, $"?access_token={tokenp}");
+        httpContextAccessor.HttpContext.Response.Redirect(uri.ToString(), true);
         return Task.FromResult(0);
     }).ExcludeFromDescription();
 });
