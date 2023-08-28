@@ -30,67 +30,19 @@ namespace ZiraLink.Api.HostingExtensions
                 appDbContext.Customers.Add(customer);
             }
 
-            if (!await appDbContext.Projects.AnyAsync(x => x.DomainType == DomainType.Default && x.Domain == "weather", cancellationTokenSource.Token))
+            if (!await appDbContext.Projects.AnyAsync(x => x.DomainType == DomainType.Custom && x.Domain == "localhost", cancellationTokenSource.Token))
             {
                 appDbContext.Projects.Add(new Domain.Project
                 {
                     ViewId = Guid.NewGuid(),
                     Title = "Weather Forecasts",
                     State = Domain.Enums.ProjectState.Active,
-                    InternalUrl = "https://localhost:9443",
-                    Customer = customer,
-                    DateCreated = DateTime.Now,
-                    DateUpdated = DateTime.Now,
-                    DomainType = DomainType.Default,
-                    Domain = "weather"
-                });
-            }
-
-            if (!await appDbContext.Projects.AnyAsync(x => x.DomainType == DomainType.Default && x.Domain == "api", cancellationTokenSource.Token))
-            {
-                appDbContext.Projects.Add(new Domain.Project
-                {
-                    ViewId = Guid.NewGuid(),
-                    Title = "Ziralink Api Swagger",
-                    State = Domain.Enums.ProjectState.Active,
-                    InternalUrl = "https://localhost:6101",
-                    Customer = customer,
-                    DateCreated = DateTime.Now,
-                    DateUpdated = DateTime.Now,
-                    DomainType = DomainType.Default,
-                    Domain = "api"
-                });
-            }
-
-            if (!await appDbContext.Projects.AnyAsync(x => x.DomainType == DomainType.Default && x.Domain == "ot", cancellationTokenSource.Token))
-            {
-                appDbContext.Projects.Add(new Domain.Project
-                {
-                    ViewId = Guid.NewGuid(),
-                    Title = "Online Trading",
-                    State = Domain.Enums.ProjectState.Active,
-                    InternalUrl = "https://localhost:3001",
-                    Customer = customer,
-                    DateCreated = DateTime.Now,
-                    DateUpdated = DateTime.Now,
-                    DomainType = DomainType.Default,
-                    Domain = "ot"
-                });
-            }
-
-            if (!await appDbContext.Projects.AnyAsync(x => x.DomainType == DomainType.Custom && x.Domain == "localhost:7101", cancellationTokenSource.Token))
-            {
-                appDbContext.Projects.Add(new Domain.Project
-                {
-                    ViewId = Guid.NewGuid(),
-                    Title = "Weather Forecasts",
-                    State = Domain.Enums.ProjectState.Active,
-                    InternalUrl = "https://localhost:9443",
+                    InternalUrl = "https://swa",
                     Customer = customer,
                     DateCreated = DateTime.Now,
                     DateUpdated = DateTime.Now,
                     DomainType = DomainType.Custom,
-                    Domain = "localhost:7101"
+                    Domain = "localhost"
                 });
             }
 

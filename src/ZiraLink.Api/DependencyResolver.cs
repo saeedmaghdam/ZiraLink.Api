@@ -72,10 +72,12 @@ public static class DependencyResolver
         // Add services to the container.
         services.AddCors(options =>
         {
+            var uri = new Uri(configuration["ZIRALINK_WEB_URL"]!);
+            var webUrl = $"{uri.Scheme}://{uri.Authority}";
             options.AddPolicy("AllowSpecificOrigins",
                 builder =>
                 {
-                    builder.WithOrigins(new Uri(configuration["ZIRALINK_WEB_URL"]!).ToString())
+                    builder.WithOrigins(webUrl)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()
