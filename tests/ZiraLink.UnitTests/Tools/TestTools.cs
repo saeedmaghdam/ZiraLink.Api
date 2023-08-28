@@ -10,7 +10,6 @@ namespace ZiraLink.UnitTests.Tools
 
         public static DbContextOptions<AppDbContext>? _contextOptions;
         public static AppDbContext? _dbContext;
-        public static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
         /// <summary>
         /// Initialization
@@ -28,39 +27,42 @@ namespace ZiraLink.UnitTests.Tools
         /// Initializing new data
         /// </summary>
         public static void SeedData()
-        { 
-            // Add new customer
-            var customer = new Customer
+        {
+            if (_dbContext is not null)
             {
-                Id = 1,
-                ViewId = Guid.NewGuid(),
-                Username = "TestUser",
-                Email = "TestUser@ZiraLink.com",
-                Name = "Test",
-                Family = "User",
-                ExternalId = "1"
-            };
-            _dbContext.Customers.Add(customer);
-            _dbContext.SaveChanges();
+                // Add new customer
+                var customer = new Customer
+                {
+                    Id = 1,
+                    ViewId = Guid.NewGuid(),
+                    Username = "TestUser",
+                    Email = "TestUser@ZiraLink.com",
+                    Name = "Test",
+                    Family = "User",
+                    ExternalId = "1"
+                };
+                _dbContext.Customers.Add(customer);
+                _dbContext.SaveChanges();
 
 
-            // Add new customer
-            Project project = new Project
-            {
-                Id = 1,
-                ViewId = new Guid(),
-                CustomerId = 1,
-                Title = "Test",
-                DomainType = Domain.Enums.DomainType.Default,
-                Domain = "Test",
-                InternalUrl = "http://test.com",
-                DateCreated = DateTime.Now,
-                DateUpdated = DateTime.Now,
-                State = ProjectState.Active,
-            };
-            _dbContext.Projects.Add(project);
+                // Add new customer
+                Project project = new Project
+                {
+                    Id = 1,
+                    ViewId = new Guid(),
+                    CustomerId = 1,
+                    Title = "Test",
+                    DomainType = Domain.Enums.DomainType.Default,
+                    Domain = "Test",
+                    InternalUrl = "http://test.com",
+                    DateCreated = DateTime.Now,
+                    DateUpdated = DateTime.Now,
+                    State = ProjectState.Active,
+                };
+                 _dbContext.Projects.AddAsync(project);
+                 _dbContext.SaveChangesAsync();
 
-            _dbContext.SaveChanges();
+            }
         }
 
     }
