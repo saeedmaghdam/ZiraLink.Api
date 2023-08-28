@@ -9,27 +9,22 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 {
     public class ProjectServiceTests
     {
-        private readonly ProjectService _projectService;
 
-        private readonly Mock<ILogger<ProjectService>> _mockILoggerProjectService;
-        private readonly Mock<IBus> _mockIBus;
-        private readonly Mock<IHttpTools> _mockIHttpTools;
-        private readonly Mock<IHttpClientFactory> _mockIHttpClientFactory;
 
         public ProjectServiceTests()
         {
             TestTools.Initialize();
-            _mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
-            _mockIBus = new Mock<IBus>();
-            _mockIHttpClientFactory = new Mock<IHttpClientFactory>();
-            _mockIHttpTools = new Mock<IHttpTools>();
-            _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, _mockIBus.Object, _mockIHttpTools.Object);
         }
 
         [Theory]
         [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:3000", ProjectState.Active)]
         public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
-        {
+        {  
+            Mock<ILogger<ProjectService>> _mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> _mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> _mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, _mockIBus.Object, _mockIHttpTools.Object);
+
             _mockIBus.Setup(p => p.Publish(It.IsAny<string>()));
             _mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).Returns(Task.FromResult(true));
 
@@ -37,7 +32,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             Assert.NotEqual(Guid.Empty, response);
 
-            var createdRow = await TestTools.AppMemoryDbContext.Projects.Where(x=> x.ViewId == response).FirstOrDefaultAsync();
+            var createdRow = await TestTools.AppMemoryDbContext.Projects.Where(x => x.ViewId == response).FirstOrDefaultAsync();
             Assert.NotNull(createdRow);
 
             Assert.Equal(customerId, createdRow.CustomerId);
