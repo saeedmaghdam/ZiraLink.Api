@@ -1,18 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
 using Moq;
-
-using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Services;
 using ZiraLink.Api.Application.Tools;
 using ZiraLink.Domain.Enums;
-using ZiraLink.UnitTests.Tools;
-namespace ZiraLink.UnitTests.Services
+using ZiraLink.Api.Application.UnitTests.Tools;
+namespace ZiraLink.Api.Application.UnitTests.Services
 {
     public class ProjectServiceTests
     {
-        private readonly ProjectService? _projectService;
+        private readonly ProjectService _projectService;
 
         private readonly Mock<ILogger<ProjectService>>? _mockILoggerProjectService;
         private readonly Mock<IBus> _mockIBus;
@@ -25,7 +22,7 @@ namespace ZiraLink.UnitTests.Services
             _mockIBus = new Mock<IBus>();
             _mockIHttpClientFactory = new Mock<IHttpClientFactory>();
             HttpTools httpTools = new HttpTools(_mockIHttpClientFactory.Object);
-            _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools._dbContext, _mockIBus.Object, httpTools);
+            _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, _mockIBus.Object, httpTools);
         }
 
         [Theory]
@@ -37,7 +34,7 @@ namespace ZiraLink.UnitTests.Services
 
             Assert.NotEqual(Guid.Empty, response);
 
-            var createdRow = await TestTools._dbContext.Projects.Where(x=> x.ViewId == response).FirstOrDefaultAsync();
+            var createdRow = await TestTools.AppMemoryDbContext.Projects.Where(x=> x.ViewId == response).FirstOrDefaultAsync();
             Assert.NotNull(createdRow);
 
             Assert.Equal(customerId, createdRow.CustomerId);

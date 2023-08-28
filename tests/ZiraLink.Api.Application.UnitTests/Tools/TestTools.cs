@@ -3,13 +3,12 @@
 using ZiraLink.Api.Application;
 using ZiraLink.Domain;
 using ZiraLink.Domain.Enums;
-namespace ZiraLink.UnitTests.Tools
+namespace ZiraLink.Api.Application.UnitTests.Tools
 {
     public class TestTools
     {
-
-        public static DbContextOptions<AppDbContext>? _contextOptions;
-        public static AppDbContext? _dbContext;
+         
+        public static AppDbContext AppMemoryDbContext;
 
         /// <summary>
         /// Initialization
@@ -18,8 +17,8 @@ namespace ZiraLink.UnitTests.Tools
         {
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             dbContextOptionsBuilder.UseInMemoryDatabase("AppDbContext");
-            _contextOptions = dbContextOptionsBuilder.Options;
-            _dbContext = new AppDbContext(_contextOptions);
+            DbContextOptions<AppDbContext>? _contextOptions = dbContextOptionsBuilder.Options;
+            AppMemoryDbContext = new AppDbContext(_contextOptions);
             SeedData();
         }
 
@@ -28,8 +27,6 @@ namespace ZiraLink.UnitTests.Tools
         /// </summary>
         public static void SeedData()
         {
-            if (_dbContext is not null)
-            {
                 // Add new customer
                 var customer = new Customer
                 {
@@ -41,9 +38,8 @@ namespace ZiraLink.UnitTests.Tools
                     Family = "User",
                     ExternalId = "1"
                 };
-                _dbContext.Customers.Add(customer);
-                _dbContext.SaveChanges();
-
+                AppMemoryDbContext.Customers.Add(customer);
+             
 
                 // Add new customer
                 Project project = new Project
@@ -59,10 +55,9 @@ namespace ZiraLink.UnitTests.Tools
                     DateUpdated = DateTime.Now,
                     State = ProjectState.Active,
                 };
-                 _dbContext.Projects.AddAsync(project);
-                 _dbContext.SaveChangesAsync();
-
-            }
+                 AppMemoryDbContext.Projects.AddAsync(project);
+                 AppMemoryDbContext.SaveChangesAsync();
+             
         }
 
     }

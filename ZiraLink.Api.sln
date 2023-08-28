@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZiraLink.Api.Application", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZiraLink.Domain", "src\ZiraLink.Domain\ZiraLink.Domain.csproj", "{641BADF6-F83C-4431-AFEB-ADC7FA6B4FE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZiraLink.UnitTests", "tests\ZiraLink.UnitTests\ZiraLink.UnitTests.csproj", "{C727EC3A-31ED-4C95-92BA-AFA2B9E283AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZiraLink.Api.Application.UnitTests", "tests\ZiraLink.Api.Application.UnitTests\ZiraLink.Api.Application.UnitTests.csproj", "{C727EC3A-31ED-4C95-92BA-AFA2B9E283AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
