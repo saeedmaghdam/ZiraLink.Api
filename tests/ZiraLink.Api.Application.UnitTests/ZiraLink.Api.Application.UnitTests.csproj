@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ZiraLink.Api.Application\ZiraLink.Api.Application.csproj" />
-    <ProjectReference Include="..\..\src\ZiraLink.Domain\ZiraLink.Domain.csproj" />
   </ItemGroup>
 
 </Project>

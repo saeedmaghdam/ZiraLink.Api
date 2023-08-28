@@ -11,8 +11,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
     {
         private readonly ProjectService _projectService;
 
-        private readonly Mock<ILogger<ProjectService>>? _mockILoggerProjectService;
+        private readonly Mock<ILogger<ProjectService>> _mockILoggerProjectService;
         private readonly Mock<IBus> _mockIBus;
+        private readonly Mock<IHttpTools> _mockIHttpTools;
         private readonly Mock<IHttpClientFactory> _mockIHttpClientFactory;
 
         public ProjectServiceTests()
@@ -21,8 +22,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             _mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
             _mockIBus = new Mock<IBus>();
             _mockIHttpClientFactory = new Mock<IHttpClientFactory>();
-            HttpTools httpTools = new HttpTools(_mockIHttpClientFactory.Object);
-            _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, _mockIBus.Object, httpTools);
+            _mockIHttpTools = new Mock<IHttpTools>();
+            _projectService = new ProjectService(_mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, _mockIBus.Object, _mockIHttpTools.Object);
         }
 
         [Theory]
@@ -30,7 +31,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             _mockIBus.Setup(p => p.Publish(It.IsAny<string>()));
-            var response = await _projectService?.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None);
+            _mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).Returns(Task.FromResult(true));
+
+            var response = await _projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None);
 
             Assert.NotEqual(Guid.Empty, response);
 
