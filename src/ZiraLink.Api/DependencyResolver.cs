@@ -7,6 +7,7 @@ using Duende.Bff.Yarp;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -99,6 +100,7 @@ public static class DependencyResolver
             .AddBff()
             .AddRemoteApis();
         JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
         services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -135,6 +137,9 @@ public static class DependencyResolver
                             handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "localhost", "server.pfx"), "son"));
 
                             options.BackchannelHttpHandler = handler;
+
+                            options.TokenValidationParameters.ValidIssuer = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
+                            options.TokenValidationParameters.ValidAudience = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         }
 
                         var db = connectionMultiplexer.GetDatabase(10);
@@ -186,6 +191,9 @@ public static class DependencyResolver
                             handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "localhost", "server.pfx"), "son"));
 
                             options.BackchannelHttpHandler = handler;
+
+                            options.TokenValidationParameters.ValidIssuer = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
+                            options.TokenValidationParameters.ValidAudience = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         }
                     });
 
