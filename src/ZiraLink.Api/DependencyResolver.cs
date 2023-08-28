@@ -137,9 +137,6 @@ public static class DependencyResolver
                             handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "localhost", "server.pfx"), "son"));
 
                             options.BackchannelHttpHandler = handler;
-
-                            options.TokenValidationParameters.ValidIssuer = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
-                            options.TokenValidationParameters.ValidAudience = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         }
 
                         var db = connectionMultiplexer.GetDatabase(10);
@@ -191,9 +188,6 @@ public static class DependencyResolver
                             handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "localhost", "server.pfx"), "son"));
 
                             options.BackchannelHttpHandler = handler;
-
-                            options.TokenValidationParameters.ValidIssuer = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
-                            options.TokenValidationParameters.ValidAudience = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         }
                     });
 
