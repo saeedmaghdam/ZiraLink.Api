@@ -26,7 +26,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Return all lists of projects for every user exceptionally
+        /// Returns list of all projects for the current user
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -43,7 +43,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Return all list of projects 
+        /// Returns list of all projects
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -56,7 +56,7 @@ namespace ZiraLink.Api.Controllers
 
 
         /// <summary>
-        /// Return a project queried with ID
+        /// Returns a single project
         /// </summary>
         /// <param name="id">Project Id</param>
         /// <param name="cancellationToken"></param>
@@ -74,7 +74,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Create new project for every user
+        /// Creates a new project
         /// </summary>
         /// <param name="model">CreateProjectInputModel type</param>
         /// <param name="cancellationToken"></param>
@@ -92,7 +92,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Delete a project
+        /// Deletes a project
         /// </summary>
         /// <param name="id">Project Id</param>
         /// <param name="cancellationToken"></param>
@@ -110,7 +110,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Update a project
+        /// Updates a project
         /// </summary>
         /// <param name="id">Project Id</param>
         /// <param name="model"></param>
