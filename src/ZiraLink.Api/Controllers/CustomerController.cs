@@ -30,6 +30,12 @@ namespace ZiraLink.Api.Controllers
             _customerService = customerService;
         }
 
+        /// <summary>
+        /// Returns the current user's profile
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         [HttpGet("Profile")]
         public async Task<ApiResponse<Customer>> GetProfileAsync(CancellationToken cancellationToken)
         {
@@ -40,6 +46,12 @@ namespace ZiraLink.Api.Controllers
             return ApiResponse<Customer>.CreateSuccessResponse(customer);
         }
 
+        /// <summary>
+        /// Registers a new customer
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         public async Task<ApiResponse<Guid>> CreateAsync([FromBody] CreateCustomerInputModel model, CancellationToken cancellationToken)
@@ -49,6 +61,13 @@ namespace ZiraLink.Api.Controllers
             return ApiResponse<Guid>.CreateSuccessResponse(result);
         }
 
+        /// <summary>
+        /// Changes the current user's password
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         [HttpPatch("ChangePassword")]
         public async Task<ApiDefaultResponse> ChangePasswordAsync([FromBody] ChangePasswordInputModel model, CancellationToken cancellationToken)
         {
@@ -61,6 +80,13 @@ namespace ZiraLink.Api.Controllers
             return ApiDefaultResponse.CreateSuccessResponse();
         }
 
+        /// <summary>
+        /// Updates the current user's profile
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         [HttpPatch]
         public async Task<ApiDefaultResponse> UpdateProfileAsync([FromBody] UpdateProfileInputModel model, CancellationToken cancellationToken)
         {
