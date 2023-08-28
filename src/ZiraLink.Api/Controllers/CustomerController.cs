@@ -31,7 +31,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Return a user profile
+        /// Returns the current user's profile
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -47,7 +47,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Create a neew user
+        /// Registers a new customer
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
@@ -62,7 +62,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Change user password
+        /// Changes the current user's password
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
@@ -81,7 +81,7 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
-        /// Update user profile
+        /// Updates the current user's profile
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
