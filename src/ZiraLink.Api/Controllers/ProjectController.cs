@@ -25,6 +25,12 @@ namespace ZiraLink.Api.Controllers
             _projectService = projectService;
         }
 
+        /// <summary>
+        /// Return all lists of projects for every user exceptionally
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         [HttpGet]
         public async Task<ApiResponse<List<Project>>> GetAsync(CancellationToken cancellationToken)
         {
@@ -36,6 +42,11 @@ namespace ZiraLink.Api.Controllers
             return ApiResponse<List<Project>>.CreateSuccessResponse(result);
         }
 
+        /// <summary>
+        /// Return all list of projects 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpGet("All")]
         public async Task<ApiResponse<List<Project>>> GetAllAsync(CancellationToken cancellationToken)
         {
@@ -43,6 +54,14 @@ namespace ZiraLink.Api.Controllers
             return ApiResponse<List<Project>>.CreateSuccessResponse(result);
         }
 
+
+        /// <summary>
+        /// Return a project queried with ID
+        /// </summary>
+        /// <param name="id">Project Id</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         [HttpGet("{id}")]
         public async Task<ApiResponse<Project>> GetByIdAsync([FromRoute] long id, CancellationToken cancellationToken)
         {
@@ -54,6 +73,13 @@ namespace ZiraLink.Api.Controllers
             return ApiResponse<Project>.CreateSuccessResponse(result);
         }
 
+        /// <summary>
+        /// Create new project for every user
+        /// </summary>
+        /// <param name="model">CreateProjectInputModel type</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         [HttpPost]
         public async Task<ApiResponse<Guid>> CreateAsync([FromBody] CreateProjectInputModel model, CancellationToken cancellationToken)
         {
@@ -65,6 +91,13 @@ namespace ZiraLink.Api.Controllers
             return ApiResponse<Guid>.CreateSuccessResponse(result);
         }
 
+        /// <summary>
+        /// Delete a project
+        /// </summary>
+        /// <param name="id">Project Id</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         [HttpDelete("{id}")]
         public async Task<ApiDefaultResponse> DeleteAsync([FromRoute] long id, CancellationToken cancellationToken)
         {
@@ -76,6 +109,14 @@ namespace ZiraLink.Api.Controllers
             return ApiDefaultResponse.CreateSuccessResponse();
         }
 
+        /// <summary>
+        /// Update a project
+        /// </summary>
+        /// <param name="id">Project Id</param>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         [HttpPatch("{id}")]
         public async Task<ApiDefaultResponse> PatchAsync([FromRoute] long id, [FromBody] PatchProjectInputModel model, CancellationToken cancellationToken)
         {
