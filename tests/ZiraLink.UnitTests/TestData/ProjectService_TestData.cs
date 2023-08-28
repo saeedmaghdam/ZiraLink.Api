@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ZiraLink.Domain.Enums;
 
-using ZiraLink.Api.Models.Project.InputModels;
-using ZiraLink.Domain;
-using ZiraLink.Domain.Enums;
-
-namespace ZiraLink.Tests.TestData
+namespace ZiraLink.UnitTests.TestData
 {
     public class ProjectService_TestData
     {

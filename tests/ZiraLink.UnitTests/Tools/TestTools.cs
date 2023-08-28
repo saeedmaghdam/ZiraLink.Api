@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore;
-
-using Moq;
+﻿using Microsoft.EntityFrameworkCore;
 
 using ZiraLink.Api.Application;
 using ZiraLink.Domain;
 using ZiraLink.Domain.Enums;
 
-namespace ZiraLink.Tests.Tools
+namespace ZiraLink.UnitTests.Tools
 {
     public class TestTools
     {
 
-        public static DbContextOptions<AppDbContext>? contextOptions;
+        public static DbContextOptions<AppDbContext>? _contextOptions;
         public static AppDbContext? _dbContext;
-        public static long customerId = 1;
+        public static long _customerId = 1;
 
         /// <summary>
         /// Initialization
@@ -28,8 +20,8 @@ namespace ZiraLink.Tests.Tools
         {
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             dbContextOptionsBuilder.UseInMemoryDatabase("AppDbContext");
-            contextOptions = dbContextOptionsBuilder.Options;
-            _dbContext = new AppDbContext(contextOptions);
+            _contextOptions = dbContextOptionsBuilder.Options;
+            _dbContext = new AppDbContext(_contextOptions);
             SeedData();
         }
 
@@ -42,7 +34,7 @@ namespace ZiraLink.Tests.Tools
             // Add new customer
             var customer = new Customer
             {
-                Id = customerId,
+                Id = _customerId,
                 ViewId = Guid.NewGuid(),
                 Username = "TestUser",
                 Email = "TestUser@ZiraLink.com",
@@ -58,7 +50,7 @@ namespace ZiraLink.Tests.Tools
             Project project =  new Project {
                     Id = 1,
                     ViewId = new Guid(),
-                    CustomerId = customerId,
+                    CustomerId = _customerId,
                     Title="Test",
                     DomainType = Domain.Enums.DomainType.Default,
                     Domain = "Test",
