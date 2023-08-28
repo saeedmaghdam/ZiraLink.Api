@@ -12,6 +12,7 @@ namespace ZiraLink.UnitTests.Tools
         public static DbContextOptions<AppDbContext>? _contextOptions;
         public static AppDbContext? _dbContext;
         public static long _customerId = 1;
+        public static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
         /// <summary>
         /// Initialization

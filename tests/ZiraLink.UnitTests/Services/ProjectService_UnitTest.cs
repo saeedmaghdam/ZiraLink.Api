@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading;
+
+using Microsoft.Extensions.Logging;
 using Moq;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Services;
@@ -30,7 +32,7 @@ namespace ZiraLink.UnitTests.Services
         [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:3000", ProjectState.Active)]
         public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
-            var response = await _projectService?.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None);
+            var response = await _projectService?.CreateAsync(customerId, title, domainType, domain, internalUrl, state, TestTools.cancellationTokenSource.Token);
              
             Assert.NotEqual("", response.ToString());
         }
