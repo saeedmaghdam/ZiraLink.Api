@@ -9,8 +9,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 {
     public class ProjectServiceTests
     {
-
-
         public ProjectServiceTests()
         {
             TestTools.Initialize();
@@ -42,6 +40,20 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal(internalUrl, createdRow.InternalUrl);
             Assert.Equal(state, createdRow.State);
             mockIBus.Verify(p => p.Publish("CUSTOMER_CREATED"), Times.Once());
+        }
+        
+        [Theory]
+        [InlineData(1, "", DomainType.Default, "TestDomain", "https://localhost:3000", ProjectState.Active)]
+        public async Task CreateProject_WhenTitleIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
+        {  
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+             
+            await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+ 
         }
 
     }
