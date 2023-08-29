@@ -81,10 +81,11 @@ app.UseEndpoints(endpoints =>
     {
         var token = default(string);
 
-        token = httpContextAccessor.HttpContext.Request.Query["access_token"];
+        token = httpContextAccessor.HttpContext!.Request.Query["access_token"];
         if (string.IsNullOrEmpty(token))
             token = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-        var id_token = await httpContextAccessor.HttpContext.GetTokenAsync("id_token");
+        var idToken = await httpContextAccessor.HttpContext.GetTokenAsync("id_token");
+        var refreshToken = await httpContextAccessor.HttpContext.GetTokenAsync("refresh_token");
 
         if (string.IsNullOrEmpty(token))
         {
@@ -95,7 +96,7 @@ app.UseEndpoints(endpoints =>
 
         var jwtSecurityToken = tokenService.ParseToken(token);
         var sub = jwtSecurityToken.Claims.Single(claim => claim.Type == "sub").Value;
-        var tokenp = await tokenService.GenerateToken(sub, String.Empty, String.Empty);
+        var tokenp = await tokenService.GenerateToken(sub, string.Empty, string.Empty);
 
         app.Logger.LogInformation($"{sub} logged in, Token: {token}, TokenP: {tokenp}");
 
@@ -103,7 +104,8 @@ app.UseEndpoints(endpoints =>
         await tokenService.SetSubTokenAsync(sub, token);
         await tokenService.SetSubTokenPAsync(sub, tokenp);
         await tokenService.SetTokenPTokenAsync(tokenp, token);
-        await tokenService.SetSubIdTokenAsync(sub, id_token);
+        await tokenService.SetSubIdTokenAsync(sub, idToken!);
+        await tokenService.SetTokenPRefreshTokenAsync(tokenp, refreshToken!);
 
         try
         {

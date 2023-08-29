@@ -56,29 +56,29 @@ namespace ZiraLink.Api
             await _db.StringSetAsync($"tokenpsub:{tokenp}", sub);
         }
 
-        public async Task<string?> GetSubByTokenPAsync(string tokenp)
+        public async Task<string?> GetTokenPSubAsync(string tokenp)
         {
             return await _db.StringGetAsync($"tokenpsub:{tokenp}");
         }
 
         public async Task SetSubTokenAsync(string sub, string token)
         {
-            await _db.StringSetAsync($"token:{sub}", token);
+            await _db.StringSetAsync($"subtoken:{sub}", token);
         }
 
-        public async Task<string?> GetTokenBySubAsync(string sub)
+        public async Task<string?> GetSunTokenAsync(string sub)
         {
-            return await _db.StringGetAsync($"token:{sub}");
+            return await _db.StringGetAsync($"subtoken:{sub}");
         }
 
         public async Task SetSubTokenPAsync(string sub, string tokenp)
         {
-            await _db.StringSetAsync($"tokenp:{sub}", tokenp);
+            await _db.StringSetAsync($"subtokenp:{sub}", tokenp);
         }
 
-        public async Task<string?> GetTokenPBySubAsync(string sub)
+        public async Task<string?> GetSubTokenPAsync(string sub)
         {
-            return await _db.StringGetAsync($"tokenp:{sub}");
+            return await _db.StringGetAsync($"subtokenp:{sub}");
         }
 
         public async Task SetTokenPTokenAsync(string tokenp, string token)
@@ -86,19 +86,29 @@ namespace ZiraLink.Api
             await _db.StringSetAsync($"tokenptoken:{tokenp}", token);
         }
 
-        public async Task<string?> GetTokenByTokenP(string tokenp)
+        public async Task<string?> GetTokenPTokenAsync(string tokenp)
         {
             return await _db.StringGetAsync($"tokenptoken:{tokenp}");
         }
 
-        public async Task SetSubIdTokenAsync(string sub, string id_token)
+        public async Task SetSubIdTokenAsync(string sub, string idToken)
         {
-            await _db.StringSetAsync($"sub:{sub}", id_token);
+            await _db.StringSetAsync($"subidtoken:{sub}", idToken);
         }
 
-        public async Task<string?> GetIdTokenSubAsync(string sub)
+        public async Task<string?> GetSubIdTokenAsync(string sub)
         {
-            return await _db.StringGetAsync($"sub:{sub}");
+            return await _db.StringGetAsync($"subidtoken:{sub}");
+        }
+
+        public async Task SetTokenPRefreshTokenAsync(string tokenp, string refreshToken)
+        {
+            await _db.StringSetAsync($"tokenprefreshtoken:{tokenp}", refreshToken);
+        }
+
+        public async Task<string?> GetTokenPRefreshTokenAsync(string tokenp)
+        {
+            return await _db.StringGetAsync($"tokenprefreshtoken:{tokenp}");
         }
     }
 }
