@@ -50,10 +50,11 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IBus> mockIBus = new Mock<IBus>();
             Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
 
+            Assert.True(string.IsNullOrWhiteSpace(title));
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
              
-            await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
- 
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+            Assert.Equal("title", exception.ParamName);
         }
 
     }
