@@ -57,5 +57,20 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal("title", exception.ParamName);
         }
 
+        [Theory]
+        [InlineData(1, "TestTitle", DomainType.Default, "", "https://localhost:3000", ProjectState.Active)]
+        public async Task CreateProject_WhenDomainIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
+        {  
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+
+            Assert.True(string.IsNullOrWhiteSpace(domain));
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+             
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+            Assert.Equal("domain", exception.ParamName);
+        }
+
     }
 }
