@@ -30,7 +30,6 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                 // Add new customer
                 var customer = new Customer
                 {
-                    Id = 1,
                     ViewId = Guid.NewGuid(),
                     Username = "TestUser",
                     Email = "TestUser@ZiraLink.com",
@@ -44,9 +43,8 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                 // Add new customer
                 Project project = new Project
                 {
-                    Id = 1,
                     ViewId = new Guid(),
-                    CustomerId = 1,
+                    Customer = customer,
                     Title = "Test",
                     DomainType = Domain.Enums.DomainType.Default,
                     Domain = "Test",
