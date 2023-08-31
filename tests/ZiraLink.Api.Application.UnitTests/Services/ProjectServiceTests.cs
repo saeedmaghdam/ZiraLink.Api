@@ -110,7 +110,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockIBus = new Mock<IBus>();
             Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
-            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).Returns(Task.FromResult(false));
+            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(false);
 
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
 
