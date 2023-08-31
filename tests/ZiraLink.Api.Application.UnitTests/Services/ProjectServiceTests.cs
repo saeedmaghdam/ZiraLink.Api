@@ -110,12 +110,13 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockIBus = new Mock<IBus>();
             Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
-            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(false);
+            mockIHttpTools.Setup(p => p.CheckDomainExists(internalUrl)).ReturnsAsync(false);
 
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ApplicationException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
-             
+
+            mockIHttpTools.Verify(p => p.CheckDomainExists(internalUrl), Times.Once());
             Assert.Equal("Public domain is not allowed", exception.Message);
         }
 
