@@ -102,6 +102,24 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
         }
+        
+        [Theory]
+        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://google.com", ProjectState.Active)]
+        public async Task CreateProject_WhenInternalUrlIsNotValid_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
+        {  
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).Returns(Task.FromResult(false));
+
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var exception = await Assert.ThrowsAsync<ApplicationException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+
+            mockIHttpTools.Verify(p => p.CheckDomainExists(internalUrl), Times.Once());
+
+            Assert.Equal("Public domain is not allowed", exception.Message);
+        }
 
     }
 }
