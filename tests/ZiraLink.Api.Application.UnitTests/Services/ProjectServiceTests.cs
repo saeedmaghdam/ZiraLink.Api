@@ -5,6 +5,8 @@ using ZiraLink.Api.Application.Services;
 using ZiraLink.Api.Application.Tools;
 using ZiraLink.Domain.Enums;
 using ZiraLink.Api.Application.UnitTests.Tools;
+using ZiraLink.Api.Application.Exceptions;
+
 namespace ZiraLink.Api.Application.UnitTests.Services
 {
     public class ProjectServiceTests
@@ -85,6 +87,20 @@ namespace ZiraLink.Api.Application.UnitTests.Services
              
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("internalUrl", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData(0, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:3000", ProjectState.Active)]
+        public async Task CreateProject_WhenCustomerIsNotValid_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
+        {  
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            Assert.Equal(0, customerId);
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+            Assert.Equal("Customer", exception.Message);
         }
 
     }
