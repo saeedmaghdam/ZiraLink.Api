@@ -26,7 +26,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
 
             mockIBus.Setup(p => p.Publish(It.IsAny<string>()));
-            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).Returns(Task.FromResult(true));
+            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(true);
 
             var response = await projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None);
 
