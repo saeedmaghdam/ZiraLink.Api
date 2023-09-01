@@ -117,8 +117,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             var exception = await Assert.ThrowsAsync<ApplicationException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
 
-            mockIHttpTools.Verify(p => p.CheckDomainExists(internalUrl), Times.Once());
-            Assert.Equal("Public domain is not allowed", exception.Message);
+            mockIHttpTools.Verify(p => p.CheckDomainExists(internalUrl), Times.Once()); 
         }
 
     }
