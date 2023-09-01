@@ -106,7 +106,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         
         [Theory]
         [InlineData(1, "TestTitle", DomainType.Default, "TestDomain2", "https://google.com", ProjectState.Active)]
-        public async Task CreateProject_WhenInternalUrlIsNotValid_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
+        public async Task CreateProject_WhenInternalUrlIsAPublicUrl_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {  
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockIBus = new Mock<IBus>();
