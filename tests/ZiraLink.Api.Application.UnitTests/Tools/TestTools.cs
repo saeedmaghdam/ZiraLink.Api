@@ -7,7 +7,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
 {
     public class TestTools
     {
-         
+
         public static AppDbContext AppMemoryDbContext;
 
         /// <summary>
@@ -27,46 +27,54 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
         /// </summary>
         public static void SeedData()
         {
-                // Add new customer
-                var customer = new Customer
-                {
-                    ViewId = Guid.NewGuid(),
-                    Username = "TestUser",
-                    Email = "TestUser@ZiraLink.com",
-                    Name = "Test",
-                    Family = "User",
-                    ExternalId = "1"
+            // Add new customer
+            List<Customer> customerList = new List<Customer> {
+                new Customer
+                    {
+                        ViewId = Guid.NewGuid(),
+                        Username = "TestUser",
+                        Email = "TestUser@ZiraLink.com",
+                        Name = "Test",
+                        Family = "User",
+                        ExternalId = "1"
+                    },
+                    new Customer
+                    {
+                        ViewId = Guid.NewGuid(),
+                        Username = "TestUser2",
+                        Email = "TestUser2@ZiraLink.com",
+                        Name = "Test2",
+                        Family = "User2",
+                        ExternalId = "2"
+                    }
                 };
-                AppMemoryDbContext.Customers.Add(customer);
-             
-                var customer2 = new Customer
-                {
-                    ViewId = Guid.NewGuid(),
-                    Username = "TestUser2",
-                    Email = "TestUser2@ZiraLink.com",
-                    Name = "Test",
-                    Family = "User",
-                    ExternalId = "2"
-                };
-                AppMemoryDbContext.Customers.Add(customer2);
-             
 
-                // Add new project
-                Project project = new Project
-                {
-                    ViewId = new Guid(),
-                    Customer = customer,
-                    Title = "Test",
-                    DomainType = Domain.Enums.DomainType.Default,
-                    Domain = "Test",
-                    InternalUrl = "http://test.com",
-                    DateCreated = DateTime.Now,
-                    DateUpdated = DateTime.Now,
-                    State = ProjectState.Active,
-                };
-                 AppMemoryDbContext.Projects.AddAsync(project);
-                 AppMemoryDbContext.SaveChangesAsync();
+            AppMemoryDbContext.Customers.AddRange(customerList);
+
+            // Add new project 
+            List<Project> projectList = new List<Project>();
+            for (int i = 0; i < customerList.Count; i++)
+            {
+                 projectList.Add(
+                    new Project
+                    {
+                        ViewId = new Guid(),
+                        Customer = customerList[i],
+                        Title = $"Test{i}",
+                        DomainType = Domain.Enums.DomainType.Default,
+                        Domain = $"Test{i}",
+                        InternalUrl = $"http://localhost:300{i}",
+                        DateCreated = DateTime.Now,
+                        DateUpdated = DateTime.Now,
+                        State = ProjectState.Active,
+                    }
+                );
+            }
              
+            AppMemoryDbContext.Projects.AddRange(projectList);
+  
+            AppMemoryDbContext.SaveChangesAsync();
+
         }
 
     }

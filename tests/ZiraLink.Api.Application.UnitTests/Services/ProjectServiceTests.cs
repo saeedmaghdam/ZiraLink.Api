@@ -231,7 +231,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region DeleteProject
         [Theory]
-        [InlineData(1, 1)]
+        [InlineData(2, 2)]
         public async Task DeleteProject_WhenEverythingIsOk_ShouldBeSuccess(long customerId, long id)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
