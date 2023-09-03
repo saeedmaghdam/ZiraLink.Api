@@ -198,7 +198,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData(0, 1)]
-        public async Task GetByIdProject_WhenIdIsNotExist_ShouldHasData(long id, long customerId)
+        public async Task GetByIdProject_WhenIdIsNotExist_ShouldBeNull(long id, long customerId)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockIBus = new Mock<IBus>();
