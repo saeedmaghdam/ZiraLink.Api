@@ -248,6 +248,25 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
         }
+
+        [Theory]
+        [InlineData(2, 0)]
+        public async Task DeleteProject_WhenIdIsNotExist_ShouldBeFailed(long customerId, long id)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var project = TestTools.AppMemoryDbContext.Projects.Find(id);
+            Assert.Null(project);
+
+            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.NotNull(customer);
+            
+            await Assert.ThrowsAsync<NotFoundException>(() => projectService.DeleteAsync(customerId, id, CancellationToken.None));
+
+        }
         #endregion
 
     }
