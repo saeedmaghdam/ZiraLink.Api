@@ -51,6 +51,16 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
 
             AppMemoryDbContext.Customers.AddRange(customerList);
 
+            AppMemoryDbContext.Customers.Add(new Customer
+                    {
+                        ViewId = Guid.NewGuid(),
+                        Username = "TestUser3",
+                        Email = "TestUser3@ZiraLink.com",
+                        Name = "Test3",
+                        Family = "User3",
+                        ExternalId = "3"
+                    });
+
             // Add new project 
             List<Project> projectList = new List<Project>();
             for (int i = 0; i < customerList.Count; i++)
