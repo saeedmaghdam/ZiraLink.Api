@@ -180,5 +180,23 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
         #endregion
 
+        #region GetByIdProject
+        [Theory]
+        [InlineData(1, 1)]
+        public async Task GetByIdProject_WhenEverythingIsOk_ShouldHasData(long id, long customerId)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+ 
+            var response = await projectService.GetByIdAsync(id, customerId, CancellationToken.None);
+            Assert.NotNull(response);
+            Assert.Equal(id, response.Id);
+            Assert.Equal(customerId, response.CustomerId);
+        }
+
+        #endregion
+
     }
 }
