@@ -87,7 +87,7 @@ namespace ZiraLink.Api.Application.Services
             var project = await _dbContext.Projects.AsNoTracking().Where(x => x.Id == id && x.CustomerId == customerId).SingleOrDefaultAsync(cancellationToken);
             if (project == null)
                 throw new NotFoundException(nameof(Project));
-
+            _dbContext.ChangeTracker.Clear();
             _dbContext.Projects.Remove(project);
             await _dbContext.SaveChangesAsync(cancellationToken);
             _bus.Publish("CUSTOMER_DELETED");

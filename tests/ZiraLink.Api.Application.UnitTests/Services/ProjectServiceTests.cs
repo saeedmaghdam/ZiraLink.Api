@@ -205,6 +205,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
 
+            var project = TestTools.AppMemoryDbContext.Projects.Find(id);
+            Assert.Null(project);
+
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
         }
@@ -217,6 +220,30 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IBus> mockIBus = new Mock<IBus>();
             Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.Null(customer);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
+            Assert.Equal("Customer", exception.Message);
+        }
+        #endregion
+
+        #region DeleteProject
+        [Theory]
+        [InlineData(1, 1)]
+        public async Task DeleteProject_WhenEverythingIsOk_ShouldBeSuccess(long customerId, long id)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            mockIBus.Setup(p => p.Publish(It.IsAny<string>()));
+
+            await projectService.DeleteAsync(customerId, id, CancellationToken.None);
+
+            mockIBus.Verify(p => p.Publish("CUSTOMER_DELETED"), Times.Once());
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
