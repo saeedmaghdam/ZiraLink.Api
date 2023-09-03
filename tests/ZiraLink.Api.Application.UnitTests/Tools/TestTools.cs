@@ -39,8 +39,19 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                 };
                 AppMemoryDbContext.Customers.Add(customer);
              
+                var customer2 = new Customer
+                {
+                    ViewId = Guid.NewGuid(),
+                    Username = "TestUser2",
+                    Email = "TestUser2@ZiraLink.com",
+                    Name = "Test",
+                    Family = "User",
+                    ExternalId = "2"
+                };
+                AppMemoryDbContext.Customers.Add(customer2);
+             
 
-                // Add new customer
+                // Add new project
                 Project project = new Project
                 {
                     ViewId = new Guid(),
