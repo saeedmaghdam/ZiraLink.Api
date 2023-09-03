@@ -132,7 +132,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IBus> mockIBus = new Mock<IBus>();
             Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
- 
+
             var response = await projectService.GetAsync(customerId, CancellationToken.None);
             Assert.True(response.Any());
         }
@@ -174,7 +174,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IBus> mockIBus = new Mock<IBus>();
             Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
- 
+
             var response = await projectService.GetAllAsync(CancellationToken.None);
             Assert.True(response.Any());
         }
@@ -189,13 +189,25 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IBus> mockIBus = new Mock<IBus>();
             Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
- 
+
             var response = await projectService.GetByIdAsync(id, customerId, CancellationToken.None);
             Assert.NotNull(response);
             Assert.Equal(id, response.Id);
             Assert.Equal(customerId, response.CustomerId);
         }
 
+        [Theory]
+        [InlineData(0, 1)]
+        public async Task GetByIdProject_WhenIdIsNotExist_ShouldHasData(long id, long customerId)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
+            Assert.Equal("Customer", exception.Message);
+        }
         #endregion
 
     }
