@@ -14,6 +14,6 @@ namespace ZiraLink.Domain
     {
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
-        public ProjectState State { get; set; }
+        public RowState State { get; set; }
     }
 }

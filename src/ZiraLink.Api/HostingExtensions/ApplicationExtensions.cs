@@ -36,7 +36,7 @@ namespace ZiraLink.Api.HostingExtensions
                 {
                     ViewId = Guid.NewGuid(),
                     Title = "Weather Forecasts",
-                    State = Domain.Enums.ProjectState.Active,
+                    State = Domain.Enums.RowState.Active,
                     InternalUrl = "https://swa",
                     Customer = customer,
                     DateCreated = DateTime.Now,

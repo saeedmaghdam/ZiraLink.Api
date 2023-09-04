@@ -13,7 +13,7 @@ namespace ZiraLink.Domain
         [ForeignKey("CustomerId")]
         public long CustomerId { get; set; }
         public string Title { get; set; }
-        public DomainType DomainType { get; set; }
+        public AppProjectType AppProjectType { get; set; }
         public string AppUniqueName { get; set; }
         public int InternalPort { get; set; }
 

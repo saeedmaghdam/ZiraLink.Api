@@ -8,6 +8,6 @@ namespace ZiraLink.Api.Models.Project.InputModels
         public DomainType DomainType { get; set; }
         public string Domain { get; set; }
         public string InternalUrl { get; set; }
-        public ProjectState State { get; set; }
+        public RowState State { get; set; }
     }
 }

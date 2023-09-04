@@ -41,7 +41,7 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
+        public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(title))
                 throw new ArgumentNullException(nameof(title));
@@ -77,7 +77,7 @@ namespace ZiraLink.Api.Application.Services
 
             await _dbContext.Projects.AddAsync(project, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            _bus.Publish("CUSTOMER_CREATED");
+            _bus.Publish("PROJECT_CREATED");
 
             return project.ViewId;
         }
@@ -90,10 +90,10 @@ namespace ZiraLink.Api.Application.Services
             _dbContext.ChangeTracker.Clear();
             _dbContext.Projects.Remove(project);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            _bus.Publish("CUSTOMER_DELETED");
+            _bus.Publish("PROJECT_DELETED");
         }
 
-        public async Task PatchAsync(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
+        public async Task PatchAsync(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state, CancellationToken cancellationToken)
         {
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
@@ -123,7 +123,7 @@ namespace ZiraLink.Api.Application.Services
             project.State = state;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
-            _bus.Publish("CUSTOMER_PATCHED");
+            _bus.Publish("PROJECT_PATCHED");
         }
     }
 }
