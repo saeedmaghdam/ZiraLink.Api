@@ -152,7 +152,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(3)]
+        [InlineData(4)]
         public async Task GetProject_WhenCustomerIsExistWithNoProjects_ShouldBeNull(long customerId)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
