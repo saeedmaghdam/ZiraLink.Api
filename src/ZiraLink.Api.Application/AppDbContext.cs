@@ -7,6 +7,7 @@ namespace ZiraLink.Api.Application
     {
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<AppProject> AppProjects { get; set; }
 
         public string DbPath { get; }
 

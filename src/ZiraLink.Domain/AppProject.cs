@@ -4,7 +4,7 @@ using ZiraLink.Domain.Enums;
 
 namespace ZiraLink.Domain
 {
-    public class Project : BaseEntity
+    public class AppProject : BaseEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -14,8 +14,8 @@ namespace ZiraLink.Domain
         public long CustomerId { get; set; }
         public string Title { get; set; }
         public DomainType DomainType { get; set; }
-        public string Domain { get; set; }
-        public string InternalUrl { get; set; }
+        public string AppUniqueName { get; set; }
+        public int InternalPort { get; set; }
 
         public Customer Customer { get; set; }
     }
