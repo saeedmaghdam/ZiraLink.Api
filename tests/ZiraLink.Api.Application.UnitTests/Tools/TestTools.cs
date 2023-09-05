@@ -54,9 +54,9 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                    {
                        ViewId = new Guid(),
                        Customer = customerList[i-1],
-                       Title = $"Test{i}",
-                       DomainType = Domain.Enums.DomainType.Default,
-                       Domain = $"Test{i}",
+                       Title = $"TestTitle{i}",
+                       DomainType = DomainType.Default,
+                       Domain = $"TestDomain{i}",
                        InternalUrl = $"http://localhost:300{i}",
                        DateCreated = DateTime.Now,
                        DateUpdated = DateTime.Now,
