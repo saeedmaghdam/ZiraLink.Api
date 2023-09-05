@@ -78,7 +78,11 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
             });
 
             AppMemoryDbContext.SaveChangesAsync();
-
+/*
+row 1 : readonly
+row 2 : delete
+row 3 : patch
+*/
         }
 
     }
