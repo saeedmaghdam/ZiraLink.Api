@@ -271,7 +271,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         }
         [Theory]
-        [InlineData(2, 0)]
+        [InlineData(0, 0)]
         public async Task DeleteProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long customerId, long id)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
