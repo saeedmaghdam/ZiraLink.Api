@@ -341,6 +341,19 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("Project", exception.Message);
         }
+
+        [Theory]
+        [InlineData(3, 3, "TestTitleEdited", DomainType.Default, "TestDomain1", "https://localhost:3001", RowState.Active)]
+        public async Task PatchProject_WhenDomainAlreadyExists_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+ 
+            var exception = await Assert.ThrowsAsync<ApplicationException>(() => projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+            Assert.Equal("Domain already exists", exception.Message);
+        }
         #endregion
 
     }
