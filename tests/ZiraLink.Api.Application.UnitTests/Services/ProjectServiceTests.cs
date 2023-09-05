@@ -235,7 +235,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         #region DeleteProject
         [Theory]
         [InlineData(2, 2)]
-        public async Task DeleteProject_WhenEverythingIsOk_ShouldBeSuccess(long customerId, long id)
+        public async Task DeleteProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, long id)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockIBus = new Mock<IBus>();
@@ -321,6 +321,25 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
+        }
+
+        [Theory]
+        [InlineData(0, 3, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", RowState.Active)]
+        public async Task PatchProject_WhenIdIsNotExist_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.NotNull(customer);
+            
+            var project = TestTools.AppMemoryDbContext.Projects.Find(id);
+            Assert.Null(project);
+            
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+            Assert.Equal("Project", exception.Message);
         }
         #endregion
 
