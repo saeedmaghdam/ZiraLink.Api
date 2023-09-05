@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using ZiraLink.Api.Application.Services;
@@ -18,7 +18,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region CreateProject
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:3000", RowState.Active)]
+        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:4000", RowState.Active)]
         public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
@@ -47,7 +47,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(1, "", DomainType.Default, "TestDomain", "https://localhost:3000", RowState.Active)]
+        [InlineData(1, "", DomainType.Default, "TestDomain", "https://localhost:4000", RowState.Active)]
         public async Task CreateProject_WhenTitleIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
@@ -62,7 +62,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "", "https://localhost:3000", RowState.Active)]
+        [InlineData(1, "TestTitle", DomainType.Default, "", "https://localhost:4000", RowState.Active)]
         public async Task CreateProject_WhenDomainIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
@@ -92,8 +92,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(0, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:3000", RowState.Active)]
-        public async Task CreateProject_WhenCustomerIsNotValid_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(0, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:4000", RowState.Active)]
+        public async Task CreateProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
         {
             Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockIBus = new Mock<IBus>();
@@ -208,6 +208,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             var project = TestTools.AppMemoryDbContext.Projects.Find(id);
             Assert.Null(project);
 
+            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.NotNull(customer);
+
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
         }
@@ -243,7 +246,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             await projectService.DeleteAsync(customerId, id, CancellationToken.None);
 
-            mockIBus.Verify(p => p.Publish("PROJECT_DELETED"), Times.Once());
+            mockIBus.Verify(p => p.Publish("CUSTOMER_DELETED"), Times.Once());
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
@@ -263,9 +266,61 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
             Assert.NotNull(customer);
-            
+
             await Assert.ThrowsAsync<NotFoundException>(() => projectService.DeleteAsync(customerId, id, CancellationToken.None));
 
+        }
+        [Theory]
+        [InlineData(2, 0)]
+        public async Task DeleteProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long customerId, long id)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.Null(customer);
+
+            await Assert.ThrowsAsync<NotFoundException>(() => projectService.DeleteAsync(customerId, id, CancellationToken.None));
+
+        }
+        #endregion
+
+        #region PatchProject
+        [Theory]
+        [InlineData(3, 3, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", RowState.Active)]
+        public async Task PatchProject_WhenEverythingIsOk_ShouldBeSucceeded(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            mockIBus.Setup(p => p.Publish(It.IsAny<string>()));
+            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(true);
+
+            await projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None);
+
+            Assert.True(true);
+            mockIBus.Verify(p => p.Publish("PROJECT_PATCHED"), Times.Once());
+            mockIHttpTools.Verify(p => p.CheckDomainExists(It.IsAny<string>()), Times.Once());
+        }
+
+        [Theory]
+        [InlineData(3, 0, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", RowState.Active)]
+        public async Task PatchProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        {
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.Null(customer);
+            
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+            Assert.Equal("Customer", exception.Message);
         }
         #endregion
 
