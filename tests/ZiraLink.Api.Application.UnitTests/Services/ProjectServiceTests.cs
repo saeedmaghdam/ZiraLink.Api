@@ -246,7 +246,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             await projectService.DeleteAsync(customerId, id, CancellationToken.None);
 
-            mockIBus.Verify(p => p.Publish("CUSTOMER_DELETED"), Times.Once());
+            mockIBus.Verify(p => p.Publish("PROJECT_DELETED"), Times.Once());
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
