@@ -64,6 +64,7 @@ public static class DependencyResolver
 
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IAppProjectService, AppProjectService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<IBus, Bus>();
