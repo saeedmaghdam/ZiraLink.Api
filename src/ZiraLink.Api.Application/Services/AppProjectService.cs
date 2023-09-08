@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 
 using ZiraLink.Api.Application.Exceptions;
@@ -48,7 +49,7 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<Guid> CreateAsync(long customerId, string title, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken)
+        public async Task<long> CreateAsync(long customerId, string title, string viewId, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(title))
                 throw new ArgumentNullException(nameof(title));
@@ -68,7 +69,7 @@ namespace ZiraLink.Api.Application.Services
 
             var appProject = new AppProject
             {
-                ViewId = Guid.NewGuid(),
+                ProjectViewId = viewId,
                 CustomerId = customer.Id,
                 Title = title,
                 AppProjectType = appProjectType,
@@ -83,7 +84,7 @@ namespace ZiraLink.Api.Application.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
             _bus.Publish("APP_PROJECT_CREATED");
 
-            return appProject.ViewId;
+            return appProject.Id;
         }
 
         public async Task DeleteAsync(long customerId, long id, CancellationToken cancellationToken)
@@ -97,7 +98,7 @@ namespace ZiraLink.Api.Application.Services
             _bus.Publish("APP_PROJECT_DELETED");
         }
 
-        public async Task PatchAsync(long id, long customerId, string title, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken)
+        public async Task PatchAsync(long id, long customerId, string title, string viewId, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken)
         {
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
@@ -113,13 +114,15 @@ namespace ZiraLink.Api.Application.Services
                 if (isDomainExists)
                     throw new ApplicationException("App name is already exists");
             }
-             
+
             if (!string.IsNullOrEmpty(title))
                 appProject.Title = title;
             if (!string.IsNullOrEmpty(appUniqueName))
                 appProject.AppUniqueName = appUniqueName;
             if (internalPort != 0)
                 appProject.InternalPort = internalPort;
+             
+            appProject.ProjectViewId = viewId;
             appProject.AppProjectType = appProjectType;
             appProject.State = state;
 

@@ -9,7 +9,7 @@ namespace ZiraLink.Domain
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        public Guid ViewId { get; set; }
+        public string ProjectViewId { get; set; }
         [ForeignKey("CustomerId")]
         public long CustomerId { get; set; }
         public string Title { get; set; }

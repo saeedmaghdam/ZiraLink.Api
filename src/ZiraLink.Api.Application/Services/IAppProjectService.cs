@@ -14,8 +14,8 @@ namespace ZiraLink.Api.Application.Services
         Task<List<AppProject>> GetAsync(long customerId, CancellationToken cancellationToken);
         Task<List<AppProject>> GetAllAsync(CancellationToken cancellationToken);
         Task<AppProject> GetByIdAsync(long id, long customerId, CancellationToken cancellationToken);
-        Task<Guid> CreateAsync(long customerId, string title, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken);
+        Task<long> CreateAsync(long customerId, string title, string viewId, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken);
         Task DeleteAsync(long customerId, long id, CancellationToken cancellationToken);
-        Task PatchAsync(long id, long customerId, string title, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken);
+        Task PatchAsync(long id, long customerId, string title, string viewId, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken);
     }
 }

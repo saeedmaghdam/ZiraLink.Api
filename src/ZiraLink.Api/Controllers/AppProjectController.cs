@@ -83,14 +83,14 @@ namespace ZiraLink.Api.Controllers
         /// <returns></returns>
         /// <exception cref="NotFoundException"></exception>
         [HttpPost]
-        public async Task<ApiResponse<Guid>> CreateAsync([FromBody] CreateAppProjectInputModel model, CancellationToken cancellationToken)
+        public async Task<ApiResponse<long>> CreateAsync([FromBody] CreateAppProjectInputModel model, CancellationToken cancellationToken)
         {
             var customer = await _sessionService.GetCurrentCustomer(cancellationToken);
             if (customer == null)
                 throw new NotFoundException("Customer");
 
-            var result = await _appProjectService.CreateAsync(customer.Id, model.Title, model.AppProjectType, model.AppUniqueName, model.InternalPort, model.State, cancellationToken);
-            return ApiResponse<Guid>.CreateSuccessResponse(result);
+            var result = await _appProjectService.CreateAsync(customer.Id, model.Title, model.ProjectViewId, model.AppProjectType, model.AppUniqueName, model.InternalPort, model.State, cancellationToken);
+            return ApiResponse<long>.CreateSuccessResponse(result);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace ZiraLink.Api.Controllers
             if (customer == null)
                 throw new NotFoundException("Customer");
 
-            await _appProjectService.PatchAsync(id, customer.Id, model.Title, model.AppProjectType, model.AppUniqueName, model.InternalPort, model.State, cancellationToken);
+            await _appProjectService.PatchAsync(id, customer.Id, model.Title, model.ProjectViewId, model.AppProjectType, model.AppUniqueName, model.InternalPort, model.State, cancellationToken);
 
             return ApiDefaultResponse.CreateSuccessResponse();
         }
