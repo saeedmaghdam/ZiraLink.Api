@@ -91,8 +91,8 @@ public static class DependencyResolver
         });
 
         var connectionString = configuration["ASPNETCORE_ENVIRONMENT"] == "Development" ? $"Data Source={Path.Combine(pathToExe, "database.db")}" : configuration["ZIRALINK_CONNECTIONSTRINGS_DB"];
-        //services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
-        services.AddDbContext<AppDbContext>();
+        services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
+        //services.AddDbContext<AppDbContext>();
 
         var connectionMultiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions
         {
