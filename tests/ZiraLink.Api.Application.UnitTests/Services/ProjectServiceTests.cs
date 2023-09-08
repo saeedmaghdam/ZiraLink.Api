@@ -26,7 +26,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
 
             mockIBus.Setup(p => p.Publish(It.IsAny<string>()));
-            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).Returns(Task.FromResult(true));
+            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(true);
 
             var response = await projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None);
 
@@ -42,6 +42,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal(internalUrl, createdRow.InternalUrl);
             Assert.Equal(state, createdRow.State);
             mockIBus.Verify(p => p.Publish("CUSTOMER_CREATED"), Times.Once());
+            mockIHttpTools.Verify(p => p.CheckDomainExists(It.IsAny<string>()), Times.Once());
         }
         
         [Theory]
@@ -101,6 +102,23 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
+        }
+        
+        [Theory]
+        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain2", "https://google.com", ProjectState.Active)]
+        public async Task CreateProject_WhenInternalUrlIsAPublicUrl_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
+        {  
+            Mock<ILogger<ProjectService>> mockILoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockIBus = new Mock<IBus>();
+            Mock<IHttpTools> mockIHttpTools = new Mock<IHttpTools>();
+            mockIHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(false);
+
+            ProjectService projectService = new ProjectService(mockILoggerProjectService.Object, TestTools.AppMemoryDbContext, mockIBus.Object, mockIHttpTools.Object);
+
+            var exception = await Assert.ThrowsAsync<ApplicationException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
+
+            mockIHttpTools.Verify(p => p.CheckDomainExists(internalUrl), Times.Once());
+            Assert.Equal("Public domain is not allowed", exception.Message);
         }
 
     }
