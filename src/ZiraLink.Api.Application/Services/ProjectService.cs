@@ -43,11 +43,11 @@ namespace ZiraLink.Api.Application.Services
 
         public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(title))
+            if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
-            if (string.IsNullOrEmpty(domain))
+            if (string.IsNullOrWhiteSpace(domain))
                 throw new ArgumentNullException(nameof(domain));
-            if (string.IsNullOrEmpty(internalUrl))
+            if (string.IsNullOrWhiteSpace(internalUrl))
                 throw new ArgumentNullException(nameof(internalUrl));
 
 
@@ -113,11 +113,11 @@ namespace ZiraLink.Api.Application.Services
             if (!await _httpTools.CheckDomainExists(internalUrl))
                 throw new ApplicationException("Public domain is not allowed");
 
-            if (!string.IsNullOrEmpty(title))
+            if (!string.IsNullOrWhiteSpace(title))
                 project.Title = title;
-            if (!string.IsNullOrEmpty(domain))
+            if (!string.IsNullOrWhiteSpace(domain))
                 project.Domain = domain;
-            if (!string.IsNullOrEmpty(internalUrl))
+            if (!string.IsNullOrWhiteSpace(internalUrl))
                 project.InternalUrl = internalUrl;
             project.DomainType = domainType;
             project.State = state;

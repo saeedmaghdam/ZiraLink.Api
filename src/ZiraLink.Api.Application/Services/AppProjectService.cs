@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using ZiraLink.Api.Application.Exceptions;
@@ -49,31 +42,27 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<long> CreateAsync(long customerId, string title, string viewId, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken)
+        public async Task<long> CreateAsync(long customerId, string title, string appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(title))
+            if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
-            if (string.IsNullOrEmpty(appUniqueName))
-                throw new ArgumentNullException(nameof(appUniqueName));
             if (internalPort <= 0 && internalPort > 99999)
                 throw new ApplicationException("Port range is not valid");
+            if (appProjectType == AppProjectType.UsePort && string.IsNullOrWhiteSpace(appProjectViewId))
+                throw new ArgumentNullException(nameof(appProjectViewId));
 
 
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
-
-            var isDomainExists = await _dbContext.AppProjects.AnyAsync(x => x.AppProjectType == appProjectType && x.AppUniqueName == appUniqueName, cancellationToken);
-            if (isDomainExists)
-                throw new ApplicationException("App name is already exists");
-
+ 
             var appProject = new AppProject
             {
-                ProjectViewId = viewId,
+                AppProjectViewId = new Guid(appProjectViewId),
+                ViewId = new Guid(),
                 CustomerId = customer.Id,
                 Title = title,
-                AppProjectType = appProjectType,
-                AppUniqueName = appUniqueName,
+                AppProjectType = appProjectType, 
                 InternalPort = internalPort,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
@@ -98,7 +87,7 @@ namespace ZiraLink.Api.Application.Services
             _bus.Publish("APP_PROJECT_DELETED");
         }
 
-        public async Task PatchAsync(long id, long customerId, string title, string viewId, AppProjectType appProjectType, string appUniqueName, int internalPort, RowState state, CancellationToken cancellationToken)
+        public async Task PatchAsync(long id, long customerId, string title, string appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
         {
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
@@ -107,22 +96,14 @@ namespace ZiraLink.Api.Application.Services
             var appProject = await _dbContext.AppProjects.SingleOrDefaultAsync(x => x.Id == id && x.CustomerId == customerId, cancellationToken);
             if (appProject == null)
                 throw new NotFoundException(nameof(Project), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(Project.Id), id) });
-
-            if (appProject.AppProjectType != appProjectType || appProject.AppUniqueName.ToLower() != appUniqueName.ToLower())
-            {
-                var isDomainExists = await _dbContext.AppProjects.AnyAsync(x => x.AppProjectType == appProjectType && x.AppUniqueName == appUniqueName, cancellationToken);
-                if (isDomainExists)
-                    throw new ApplicationException("App name is already exists");
-            }
-
-            if (!string.IsNullOrEmpty(title))
+  
+            if (!string.IsNullOrWhiteSpace(title))
                 appProject.Title = title;
-            if (!string.IsNullOrEmpty(appUniqueName))
-                appProject.AppUniqueName = appUniqueName;
             if (internalPort != 0)
                 appProject.InternalPort = internalPort;
-             
-            appProject.ProjectViewId = viewId;
+            if (!string.IsNullOrWhiteSpace(appProjectViewId))
+                appProject.AppProjectViewId = new Guid(appProjectViewId);
+
             appProject.AppProjectType = appProjectType;
             appProject.State = state;
 
