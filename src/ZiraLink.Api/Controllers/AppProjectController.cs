@@ -89,7 +89,7 @@ namespace ZiraLink.Api.Controllers
             if (customer == null)
                 throw new NotFoundException("Customer");
 
-            var result = await _appProjectService.CreateAsync(customer.Id, model.Title, model.ProjectViewId, model.AppProjectType, model.AppUniqueName, model.InternalPort, model.State, cancellationToken);
+            var result = await _appProjectService.CreateAsync(customer.Id, model.Title, model.AppProjectViewId, model.AppProjectType, model.InternalPort, model.State, cancellationToken);
             return ApiResponse<long>.CreateSuccessResponse(result);
         }
 
@@ -126,7 +126,7 @@ namespace ZiraLink.Api.Controllers
             if (customer == null)
                 throw new NotFoundException("Customer");
 
-            await _appProjectService.PatchAsync(id, customer.Id, model.Title, model.ProjectViewId, model.AppProjectType, model.AppUniqueName, model.InternalPort, model.State, cancellationToken);
+            await _appProjectService.PatchAsync(id, customer.Id, model.Title, model.AppProjectViewId, model.AppProjectType, model.InternalPort, model.State, cancellationToken);
 
             return ApiDefaultResponse.CreateSuccessResponse();
         }
