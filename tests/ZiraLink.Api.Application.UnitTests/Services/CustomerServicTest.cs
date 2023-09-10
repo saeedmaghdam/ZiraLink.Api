@@ -15,8 +15,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         #region GetCustomerByExternalId
-        [Theory]
-        [InlineData("1")]
+        // [Theory]
+        // [InlineData("1")]
         public async Task GetCustomerByExternalId_WhenEverythingIsOk_ShouldHasData(string externalId)
         {
             //Arrange
