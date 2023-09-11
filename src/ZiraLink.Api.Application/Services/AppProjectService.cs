@@ -50,15 +50,17 @@ namespace ZiraLink.Api.Application.Services
                 throw new ApplicationException("Port range is not valid");
             if (appProjectType == AppProjectType.UsePort && string.IsNullOrWhiteSpace(appProjectViewId))
                 throw new ArgumentNullException(nameof(appProjectViewId));
-
+            if (appProjectType == AppProjectType.UsePort && !(Guid.TryParse(appProjectViewId, out _)))
+                throw new ApplicationException("App project viewId is not valid");
 
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
- 
+
+            Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? new Guid() : new Guid(appProjectViewId);
+            
             var appProject = new AppProject
             {
-                AppProjectViewId = new Guid(appProjectViewId),
                 ViewId = new Guid(),
                 CustomerId = customer.Id,
                 Title = title,
@@ -89,6 +91,9 @@ namespace ZiraLink.Api.Application.Services
 
         public async Task PatchAsync(long id, long customerId, string title, string appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
         {
+            if (appProjectType == AppProjectType.UsePort && !(Guid.TryParse(appProjectViewId, out _)))
+                throw new ApplicationException("App project viewId is not valid");
+
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
@@ -101,8 +106,10 @@ namespace ZiraLink.Api.Application.Services
                 appProject.Title = title;
             if (internalPort != 0)
                 appProject.InternalPort = internalPort;
-            if (!string.IsNullOrWhiteSpace(appProjectViewId))
+
+            if (appProjectType == AppProjectType.UsePort && !string.IsNullOrWhiteSpace(appProjectViewId))
                 appProject.AppProjectViewId = new Guid(appProjectViewId);
+
 
             appProject.AppProjectType = appProjectType;
             appProject.State = state;

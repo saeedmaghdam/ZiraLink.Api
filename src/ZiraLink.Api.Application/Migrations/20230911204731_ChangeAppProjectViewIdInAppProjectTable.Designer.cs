@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZiraLink.Api.Application;
 
@@ -10,9 +11,11 @@ using ZiraLink.Api.Application;
 namespace ZiraLink.Api.Application.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230911204731_ChangeAppProjectViewIdInAppProjectTable")]
+    partial class ChangeAppProjectViewIdInAppProjectTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
@@ -26,7 +29,7 @@ namespace ZiraLink.Api.Application.Migrations
                     b.Property<int>("AppProjectType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("AppProjectViewId")
+                    b.Property<Guid>("AppProjectViewId")
                         .HasColumnType("TEXT");
 
                     b.Property<long>("CustomerId")
