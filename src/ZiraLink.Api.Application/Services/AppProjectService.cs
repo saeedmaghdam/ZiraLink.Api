@@ -57,14 +57,18 @@ namespace ZiraLink.Api.Application.Services
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
 
-            Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? new Guid() : new Guid(appProjectViewId);
-            
+            Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? Guid.Empty : Guid.Parse(appProjectViewId);
+ 
+            if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewIdGuid))
+                throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId) });
+
             var appProject = new AppProject
             {
-                ViewId = new Guid(),
+                ViewId = Guid.NewGuid(),
+                AppProjectViewId = appProjectViewIdGuid,
                 CustomerId = customer.Id,
                 Title = title,
-                AppProjectType = appProjectType, 
+                AppProjectType = appProjectType,
                 InternalPort = internalPort,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
@@ -100,17 +104,19 @@ namespace ZiraLink.Api.Application.Services
 
             var appProject = await _dbContext.AppProjects.SingleOrDefaultAsync(x => x.Id == id && x.CustomerId == customerId, cancellationToken);
             if (appProject == null)
-                throw new NotFoundException(nameof(Project), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(Project.Id), id) });
-  
+                throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.Id), id) });
+             
+            Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? Guid.Empty : Guid.Parse(appProjectViewId);
+
+            if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewIdGuid))
+                throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId) });
+
             if (!string.IsNullOrWhiteSpace(title))
                 appProject.Title = title;
             if (internalPort != 0)
                 appProject.InternalPort = internalPort;
 
-            if (appProjectType == AppProjectType.UsePort && !string.IsNullOrWhiteSpace(appProjectViewId))
-                appProject.AppProjectViewId = new Guid(appProjectViewId);
-
-
+            appProject.AppProjectViewId = appProjectViewIdGuid; 
             appProject.AppProjectType = appProjectType;
             appProject.State = state;
 
