@@ -55,8 +55,6 @@ namespace ZiraLink.Api.Application.Services
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
 
-            //Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? Guid.Empty : Guid.Parse(appProjectViewId);
- 
             if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewId))
                 throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId.Value) });
 
@@ -104,14 +102,12 @@ namespace ZiraLink.Api.Application.Services
             if (appProject == null)
                 throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.Id), id) });
              
-            //Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? Guid.Empty : Guid.Parse(appProjectViewId);
-
             if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewId))
                 throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId.Value) });
 
             if (!string.IsNullOrWhiteSpace(title))
                 appProject.Title = title;
-            if (internalPort < 1 || internalPort > 65535)
+            if (internalPort >= 1 && internalPort <= 65535)
                 appProject.InternalPort = internalPort;
 
             appProject.AppProjectViewId = appProjectViewId; 
