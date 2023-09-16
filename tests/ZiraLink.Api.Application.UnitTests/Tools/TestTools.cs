@@ -18,7 +18,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             dbContextOptionsBuilder.UseInMemoryDatabase("AppDbContext");
             DbContextOptions<AppDbContext>? contextOptions = dbContextOptionsBuilder.Options;
-            AppMemoryDbContext = new AppDbContext(contextOptions);
+            //AppMemoryDbContext = new AppDbContext(contextOptions);
             SeedData();
         }
 
@@ -60,7 +60,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                        InternalUrl = $"http://localhost:300{i}",
                        DateCreated = DateTime.Now,
                        DateUpdated = DateTime.Now,
-                       State = RowState.Active,
+                       State = ProjectState.Active,
                    }
                );
             }

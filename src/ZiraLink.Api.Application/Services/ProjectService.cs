@@ -41,7 +41,7 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state, CancellationToken cancellationToken)
+        public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
@@ -93,7 +93,7 @@ namespace ZiraLink.Api.Application.Services
             _bus.Publish("PROJECT_DELETED");
         }
 
-        public async Task PatchAsync(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state, CancellationToken cancellationToken)
+        public async Task PatchAsync(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
         {
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)

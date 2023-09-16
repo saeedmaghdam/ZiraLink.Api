@@ -8,7 +8,7 @@ namespace ZiraLink.Api.Models.AppProject.InputModels
         public Guid? AppProjectViewId { get; set; }
         public AppProjectType AppProjectType { get; set; }
         public int InternalPort { get; set; }
-        public RowState State { get; set; }
+        public ProjectState State { get; set; }
 
 
     }

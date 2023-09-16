@@ -55,7 +55,7 @@ namespace ZiraLink.Api.Application.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("AppProjects");
+                    b.ToTable("AppProjects", (string)null);
                 });
 
             modelBuilder.Entity("ZiraLink.Domain.Customer", b =>
@@ -89,7 +89,7 @@ namespace ZiraLink.Api.Application.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("ZiraLink.Domain.Project", b =>
@@ -132,7 +132,7 @@ namespace ZiraLink.Api.Application.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("ZiraLink.Domain.AppProject", b =>

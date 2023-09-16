@@ -1,6 +1,6 @@
 ﻿namespace ZiraLink.Domain.Enums
 {
-    public enum RowState
+    public enum ProjectState
     {
         Inactive = 0,
         Active = 1

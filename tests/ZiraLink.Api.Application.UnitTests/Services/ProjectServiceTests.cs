@@ -18,8 +18,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region CreateProject
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:4000", RowState.Active)]
-        public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:4000", ProjectState.Active)]
+        public async Task CreateProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -47,8 +47,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(1, "", DomainType.Default, "TestDomain", "https://localhost:4000", RowState.Active)]
-        public async Task CreateProject_WhenTitleIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(1, "", DomainType.Default, "TestDomain", "https://localhost:4000", ProjectState.Active)]
+        public async Task CreateProject_WhenTitleIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -62,8 +62,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "", "https://localhost:4000", RowState.Active)]
-        public async Task CreateProject_WhenDomainIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(1, "TestTitle", DomainType.Default, "", "https://localhost:4000", ProjectState.Active)]
+        public async Task CreateProject_WhenDomainIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -77,8 +77,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "", RowState.Active)]
-        public async Task CreateProject_WhenInternalUrlIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "", ProjectState.Active)]
+        public async Task CreateProject_WhenInternalUrlIsEmpty_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -92,8 +92,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(0, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:4000", RowState.Active)]
-        public async Task CreateProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(0, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:4000", ProjectState.Active)]
+        public async Task CreateProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -106,8 +106,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain1", "https://localhost:4000", RowState.Active)]
-        public async Task CreateProject_WhenDomainAlreadyExists_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain1", "https://localhost:4000", ProjectState.Active)]
+        public async Task CreateProject_WhenDomainAlreadyExists_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
 
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
@@ -121,8 +121,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(1, "TestTitleN", DomainType.Default, "TestDomainN", "https://google.com", RowState.Active)]
-        public async Task CreateProject_WhenInternalUrlIsAPublicUrl_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(1, "TestTitleN", DomainType.Default, "TestDomainN", "https://google.com", ProjectState.Active)]
+        public async Task CreateProject_WhenInternalUrlIsAPublicUrl_ShouldBeFailed(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -304,8 +304,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region PatchProject
         [Theory]
-        [InlineData(3, 3, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", RowState.Active)]
-        public async Task PatchProject_WhenEverythingIsOk_ShouldBeSucceeded(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(3, 3, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", ProjectState.Active)]
+        public async Task PatchProject_WhenEverythingIsOk_ShouldBeSucceeded(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -323,8 +323,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(3, 0, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", RowState.Active)]
-        public async Task PatchProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(3, 0, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", ProjectState.Active)]
+        public async Task PatchProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -339,8 +339,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(0, 3, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", RowState.Active)]
-        public async Task PatchProject_WhenIdIsNotExist_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(0, 3, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://localhost:4001", ProjectState.Active)]
+        public async Task PatchProject_WhenIdIsNotExist_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -358,8 +358,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(3, 3, "TestTitleEdited", DomainType.Default, "TestDomain1", "https://localhost:3001", RowState.Active)]
-        public async Task PatchProject_WhenDomainAlreadyExists_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(3, 3, "TestTitleEdited", DomainType.Default, "TestDomain1", "https://localhost:3001", ProjectState.Active)]
+        public async Task PatchProject_WhenDomainAlreadyExists_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -371,8 +371,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(3, 3, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://google.com", RowState.Active)]
-        public async Task PatchProject_WhenInternalUrlIsAPublicUrl_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, RowState state)
+        [InlineData(3, 3, "TestTitleEdited", DomainType.Default, "TestDomainEdited", "https://google.com", ProjectState.Active)]
+        public async Task PatchProject_WhenInternalUrlIsAPublicUrl_ShouldBeFailed(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state)
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();

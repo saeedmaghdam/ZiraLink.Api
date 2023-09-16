@@ -17,6 +17,7 @@ namespace ZiraLink.Domain
         public AppProjectType AppProjectType { get; set; }
         //public string AppUniqueName { get; set; }
         public int InternalPort { get; set; }
+        public ProjectState State { get; set; }
 
         public Customer Customer { get; set; }
     }

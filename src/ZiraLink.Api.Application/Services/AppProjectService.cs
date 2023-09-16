@@ -42,7 +42,7 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<long> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
+        public async Task<long> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
@@ -91,7 +91,7 @@ namespace ZiraLink.Api.Application.Services
             _bus.Publish("APP_PROJECT_DELETED");
         }
 
-        public async Task PatchAsync(long id, long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
+        public async Task PatchAsync(long id, long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state, CancellationToken cancellationToken)
         {
             if (appProjectType == AppProjectType.UsePort && (!appProjectViewId.HasValue || appProjectViewId == Guid.Empty))
                 throw new ArgumentNullException(nameof(appProjectViewId));
