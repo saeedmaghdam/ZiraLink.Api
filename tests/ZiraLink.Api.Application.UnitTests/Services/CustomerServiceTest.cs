@@ -7,9 +7,9 @@ using ZiraLink.Domain;
 
 namespace ZiraLink.Api.Application.UnitTests.Services
 {
-    public class CustomerServicTest
+    public class CustomerServiceTest
     {
-        public CustomerServicTest()
+        public CustomerServiceTest()
         {
             TestTools.Initialize();
         }
