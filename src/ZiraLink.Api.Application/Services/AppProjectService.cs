@@ -42,30 +42,28 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<long> CreateAsync(long customerId, string title, string appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
+        public async Task<long> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
-            if (internalPort <= 0 && internalPort > 99999)
+            if (internalPort < 1 || internalPort > 65535)
                 throw new ApplicationException("Port range is not valid");
-            if (appProjectType == AppProjectType.UsePort && string.IsNullOrWhiteSpace(appProjectViewId))
+            if (appProjectType == AppProjectType.UsePort && (!appProjectViewId.HasValue || appProjectViewId == Guid.Empty))
                 throw new ArgumentNullException(nameof(appProjectViewId));
-            if (appProjectType == AppProjectType.UsePort && !(Guid.TryParse(appProjectViewId, out _)))
-                throw new ApplicationException("App project viewId is not valid");
 
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), customerId) });
 
-            Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? Guid.Empty : Guid.Parse(appProjectViewId);
+            //Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? Guid.Empty : Guid.Parse(appProjectViewId);
  
-            if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewIdGuid))
-                throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId) });
+            if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewId))
+                throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId.Value) });
 
             var appProject = new AppProject
             {
                 ViewId = Guid.NewGuid(),
-                AppProjectViewId = appProjectViewIdGuid,
+                AppProjectViewId = appProjectViewId,
                 CustomerId = customer.Id,
                 Title = title,
                 AppProjectType = appProjectType,
@@ -93,10 +91,10 @@ namespace ZiraLink.Api.Application.Services
             _bus.Publish("APP_PROJECT_DELETED");
         }
 
-        public async Task PatchAsync(long id, long customerId, string title, string appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
+        public async Task PatchAsync(long id, long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, RowState state, CancellationToken cancellationToken)
         {
-            if (appProjectType == AppProjectType.UsePort && !(Guid.TryParse(appProjectViewId, out _)))
-                throw new ApplicationException("App project viewId is not valid");
+            if (appProjectType == AppProjectType.UsePort && (!appProjectViewId.HasValue || appProjectViewId == Guid.Empty))
+                throw new ArgumentNullException(nameof(appProjectViewId));
 
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.Id == customerId, cancellationToken);
             if (customer == null)
@@ -106,17 +104,17 @@ namespace ZiraLink.Api.Application.Services
             if (appProject == null)
                 throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.Id), id) });
              
-            Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? Guid.Empty : Guid.Parse(appProjectViewId);
+            //Guid appProjectViewIdGuid = string.IsNullOrWhiteSpace(appProjectViewId) ? Guid.Empty : Guid.Parse(appProjectViewId);
 
-            if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewIdGuid))
-                throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId) });
+            if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewId))
+                throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId.Value) });
 
             if (!string.IsNullOrWhiteSpace(title))
                 appProject.Title = title;
-            if (internalPort != 0)
+            if (internalPort < 1 || internalPort > 65535)
                 appProject.InternalPort = internalPort;
 
-            appProject.AppProjectViewId = appProjectViewIdGuid; 
+            appProject.AppProjectViewId = appProjectViewId; 
             appProject.AppProjectType = appProjectType;
             appProject.State = state;
 
