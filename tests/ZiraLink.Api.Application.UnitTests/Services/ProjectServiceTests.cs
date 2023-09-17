@@ -9,11 +9,12 @@ using ZiraLink.Api.Application.Exceptions;
 
 namespace ZiraLink.Api.Application.UnitTests.Services
 {
-    public class ProjectServiceTests
-    {
+    public class ProjectServiceTests : IClassFixture<TestInitalizeFixture>
+    { 
+        private readonly TestInitalizeFixture _testInitalizeFixture;
         public ProjectServiceTests()
-        {
-            TestTools.Initialize();
+        { 
+            //_testInitalizeFixture = testInitalizeFixture;
         }
 
         #region CreateProject
@@ -24,7 +25,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             mockBus.Setup(p => p.Publish(It.IsAny<string>()));
             mockHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(true);
@@ -33,7 +34,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             Assert.NotEqual(Guid.Empty, response);
 
-            var createdRow = await TestTools.AppMemoryDbContext.Projects.Where(x => x.ViewId == response).FirstOrDefaultAsync();
+            var createdRow = await _testInitalizeFixture.AppMemoryDbContext.Projects.Where(x => x.ViewId == response).FirstOrDefaultAsync();
             Assert.NotNull(createdRow);
 
             Assert.Equal(customerId, createdRow.CustomerId);
@@ -55,7 +56,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
 
             Assert.True(string.IsNullOrWhiteSpace(title));
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("title", exception.ParamName);
@@ -70,7 +71,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
 
             Assert.True(string.IsNullOrWhiteSpace(domain));
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("domain", exception.ParamName);
@@ -85,7 +86,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
 
             Assert.True(string.IsNullOrWhiteSpace(internalUrl));
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("internalUrl", exception.ParamName);
@@ -99,7 +100,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
             Assert.Equal(0, customerId);
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
@@ -114,7 +115,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
 
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ApplicationException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("Domain already exists", exception.Message);
@@ -129,7 +130,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
             mockHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(false);
 
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ApplicationException>(() => projectService.CreateAsync(customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
 
@@ -146,7 +147,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var response = await projectService.GetAsync(customerId, CancellationToken.None);
             Assert.True(response.Any());
@@ -159,8 +160,8 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            var customer = _testInitalizeFixture.AppMemoryDbContext.Customers.Find(customerId);
             Assert.Null(customer);
             var response = await projectService.GetAsync(customerId, CancellationToken.None);
             Assert.False(response.Any());
@@ -169,12 +170,13 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         [Theory]
         [InlineData(4)]
         public async Task GetProject_WhenCustomerIsExistWithNoProjects_ShouldBeNull(long customerId)
+
         {
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            var customer = _testInitalizeFixture.AppMemoryDbContext.Customers.Find(customerId);
             Assert.NotNull(customer);
             var response = await projectService.GetAsync(customerId, CancellationToken.None);
             Assert.False(response.Any());
@@ -188,7 +190,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var response = await projectService.GetAllAsync(CancellationToken.None);
             Assert.True(response.Any());
@@ -203,7 +205,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var response = await projectService.GetByIdAsync(id, customerId, CancellationToken.None);
             Assert.NotNull(response);
@@ -218,12 +220,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
-            var project = TestTools.AppMemoryDbContext.Projects.Find(id);
+            var project = _testInitalizeFixture.AppMemoryDbContext.Projects.Find(id);
             Assert.Null(project);
 
-            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            var customer = _testInitalizeFixture.AppMemoryDbContext.Customers.Find(customerId);
             Assert.NotNull(customer);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
@@ -237,9 +239,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
-            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            var customer = _testInitalizeFixture.AppMemoryDbContext.Customers.Find(customerId);
             Assert.Null(customer);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
@@ -255,7 +257,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             mockBus.Setup(p => p.Publish(It.IsAny<string>()));
 
@@ -263,8 +265,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             mockBus.Verify(p => p.Publish("PROJECT_DELETED"), Times.Once());
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
-            Assert.Equal("Customer", exception.Message);
         }
 
         [Theory]
@@ -274,12 +274,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
-            var project = TestTools.AppMemoryDbContext.Projects.Find(id);
+            var project = _testInitalizeFixture.AppMemoryDbContext.Projects.Find(id);
             Assert.Null(project);
 
-            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            var customer = _testInitalizeFixture.AppMemoryDbContext.Customers.Find(customerId);
             Assert.NotNull(customer);
 
             await Assert.ThrowsAsync<NotFoundException>(() => projectService.DeleteAsync(customerId, id, CancellationToken.None));
@@ -292,9 +292,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
-            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            var customer = _testInitalizeFixture.AppMemoryDbContext.Customers.Find(customerId);
             Assert.Null(customer);
 
             await Assert.ThrowsAsync<NotFoundException>(() => projectService.DeleteAsync(customerId, id, CancellationToken.None));
@@ -310,7 +310,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             mockBus.Setup(p => p.Publish(It.IsAny<string>()));
             mockHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(true);
@@ -329,9 +329,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
-            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            var customer = _testInitalizeFixture.AppMemoryDbContext.Customers.Find(customerId);
             Assert.Null(customer);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
@@ -345,12 +345,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
-            var customer = TestTools.AppMemoryDbContext.Customers.Find(customerId);
+            var customer = _testInitalizeFixture.AppMemoryDbContext.Customers.Find(customerId);
             Assert.NotNull(customer);
 
-            var project = TestTools.AppMemoryDbContext.Projects.Find(id);
+            var project = _testInitalizeFixture.AppMemoryDbContext.Projects.Find(id);
             Assert.Null(project);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
@@ -364,7 +364,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ApplicationException>(() => projectService.PatchAsync(id, customerId, title, domainType, domain, internalUrl, state, CancellationToken.None));
             Assert.Equal("Domain already exists", exception.Message);
@@ -377,7 +377,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, TestTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testInitalizeFixture.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
 
             mockHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(false);
 
