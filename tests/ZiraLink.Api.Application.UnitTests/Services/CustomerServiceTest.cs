@@ -8,13 +8,14 @@ using ZiraLink.Api.Application.UnitTests.Tools;
 using ZiraLink.Domain;
 
 namespace ZiraLink.Api.Application.UnitTests.Services
-{
-    public class CustomerServiceTest : IClassFixture<TestInitalizeFixture>
+{ 
+    public class CustomerServiceTest
     { 
-        private readonly TestInitalizeFixture _testInitalizeFixture;
+        private readonly TestTools _testTools;
         public CustomerServiceTest()
-        { 
-            //_testInitalizeFixture = testInitalizeFixture;
+        {
+            _testTools = new TestTools();
+            _testTools.Initialize(nameof(CustomerServiceTest));
         }
 
         #region GetCustomerByExternalId
@@ -26,7 +27,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             var mockConfiguration = new Mock<IConfiguration>();
             mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
    
-            CustomerService customerService = new CustomerService(_testInitalizeFixture.AppMemoryDbContext, mockConfiguration.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
 
             var response = await customerService.GetCustomerByExternalIdAsync(externalId, CancellationToken.None);
             Assert.True(response is Customer);

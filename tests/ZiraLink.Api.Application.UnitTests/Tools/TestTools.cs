@@ -13,10 +13,11 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
         /// <summary>
         /// Initialization
         /// </summary>
-        public void Initialize()
+        public void Initialize(string testClassName)
         {
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            dbContextOptionsBuilder.UseInMemoryDatabase("AppDbContext");
+           
+            dbContextOptionsBuilder.UseInMemoryDatabase($"AppDbContext_{testClassName}");
             DbContextOptions<AppDbContext>? contextOptions = dbContextOptionsBuilder.Options;
             AppMemoryDbContext = new AppDbContext(contextOptions);
             SeedData();
