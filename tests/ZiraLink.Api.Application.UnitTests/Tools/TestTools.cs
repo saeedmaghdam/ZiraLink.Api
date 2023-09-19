@@ -7,16 +7,17 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
 {
     public class TestTools
     {
-         
-        public static AppDbContext AppMemoryDbContext;
+
+        public AppDbContext AppMemoryDbContext;
 
         /// <summary>
         /// Initialization
         /// </summary>
-        public static void Initialize()
+        public void Initialize(string testClassName)
         {
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            dbContextOptionsBuilder.UseInMemoryDatabase("AppDbContext");
+           
+            dbContextOptionsBuilder.UseInMemoryDatabase($"AppDbContext_{testClassName}");
             DbContextOptions<AppDbContext>? contextOptions = dbContextOptionsBuilder.Options;
             AppMemoryDbContext = new AppDbContext(contextOptions);
             SeedData();
@@ -25,37 +26,72 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
         /// <summary>
         /// Initializing new data
         /// </summary>
-        public static void SeedData()
+        public void SeedData()
         {
+            List<Customer> customerList = new List<Customer>();
+            int countCustomer = 3;
+            if (!AppMemoryDbContext.Customers.Any())
+            {
                 // Add new customer
-                var customer = new Customer
+               
+                for (int i = 1; i <= countCustomer; i++)
+                {
+                    customerList.Add(new Customer
+                    {
+                        ViewId = Guid.NewGuid(),
+                        Username = $"TestUser{i}",
+                        Email = $"TestUser{i}@ZiraLink.com",
+                        Name = $"TestName{i}",
+                        Family = $"User{i}",
+                        ExternalId = i.ToString()
+                    });
+                }
+
+                AppMemoryDbContext.Customers.AddRange(customerList);
+            }
+
+            if (!AppMemoryDbContext.Projects.Any())
+            {
+                // Add new project 
+                List<Project> projectList = new List<Project>();  
+                for (int i = 1; i <= customerList.Count; i++)
+                {
+                    projectList.Add(
+                       new Project
+                       {
+                           ViewId = new Guid(),
+                           Customer = customerList[i - 1],
+                           Title = $"TestTitle{i}",
+                           DomainType = DomainType.Default,
+                           Domain = $"TestDomain{i}",
+                           InternalUrl = $"http://localhost:300{i}",
+                           DateCreated = DateTime.Now,
+                           DateUpdated = DateTime.Now,
+                           State = ProjectState.Active,
+                       }
+                   );
+                }
+
+                AppMemoryDbContext.Projects.AddRange(projectList);
+            }
+            if (!AppMemoryDbContext.Customers.Any(x=>x.ExternalId == (countCustomer + 1).ToString()))
+            {
+                AppMemoryDbContext.Customers.Add(new Customer
                 {
                     ViewId = Guid.NewGuid(),
-                    Username = "TestUser",
-                    Email = "TestUser@ZiraLink.com",
-                    Name = "Test",
-                    Family = "User",
-                    ExternalId = "1"
-                };
-                AppMemoryDbContext.Customers.Add(customer);
-             
-
-                // Add new customer
-                Project project = new Project
-                {
-                    ViewId = new Guid(),
-                    Customer = customer,
-                    Title = "Test",
-                    DomainType = Domain.Enums.DomainType.Default,
-                    Domain = "Test",
-                    InternalUrl = "http://test.com",
-                    DateCreated = DateTime.Now,
-                    DateUpdated = DateTime.Now,
-                    State = ProjectState.Active,
-                };
-                 AppMemoryDbContext.Projects.AddAsync(project);
-                 AppMemoryDbContext.SaveChangesAsync();
-             
+                    Username = $"TestUser{countCustomer + 1}",
+                    Email = $"TestUser{countCustomer + 1}@ZiraLink.com",
+                    Name = $"TestName{countCustomer + 1}",
+                    Family = $"User{countCustomer + 1}",
+                    ExternalId = (countCustomer + 1).ToString()
+                });
+            }
+            AppMemoryDbContext.SaveChangesAsync();
+/*
+row 1 : readonly
+row 2 : delete
+row 3 : patch
+*/
         }
 
     }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZiraLink.Api.Application;
 
@@ -10,9 +11,11 @@ using ZiraLink.Api.Application;
 namespace ZiraLink.Api.Application.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230908093430_ChangeViewIdColumnInAppProjectEntity")]
+    partial class ChangeViewIdColumnInAppProjectEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
@@ -26,7 +29,8 @@ namespace ZiraLink.Api.Application.Migrations
                     b.Property<int>("AppProjectType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("AppProjectViewId")
+                    b.Property<string>("AppUniqueName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<long>("CustomerId")
@@ -41,6 +45,10 @@ namespace ZiraLink.Api.Application.Migrations
                     b.Property<int>("InternalPort")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ProjectViewId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("State")
                         .HasColumnType("INTEGER");
 
@@ -48,14 +56,11 @@ namespace ZiraLink.Api.Application.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ViewId")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("AppProjects", (string)null);
+                    b.ToTable("AppProjects");
                 });
 
             modelBuilder.Entity("ZiraLink.Domain.Customer", b =>
@@ -89,7 +94,7 @@ namespace ZiraLink.Api.Application.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("ZiraLink.Domain.Project", b =>
@@ -132,7 +137,7 @@ namespace ZiraLink.Api.Application.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("ZiraLink.Domain.AppProject", b =>

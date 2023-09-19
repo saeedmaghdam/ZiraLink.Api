@@ -43,11 +43,11 @@ namespace ZiraLink.Api.Application.Services
 
         public async Task<Guid> CreateAsync(long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(title))
+            if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
-            if (string.IsNullOrEmpty(domain))
+            if (string.IsNullOrWhiteSpace(domain))
                 throw new ArgumentNullException(nameof(domain));
-            if (string.IsNullOrEmpty(internalUrl))
+            if (string.IsNullOrWhiteSpace(internalUrl))
                 throw new ArgumentNullException(nameof(internalUrl));
 
 
@@ -77,7 +77,7 @@ namespace ZiraLink.Api.Application.Services
 
             await _dbContext.Projects.AddAsync(project, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            _bus.Publish("CUSTOMER_CREATED");
+            _bus.Publish("PROJECT_CREATED");
 
             return project.ViewId;
         }
@@ -87,10 +87,10 @@ namespace ZiraLink.Api.Application.Services
             var project = await _dbContext.Projects.AsNoTracking().Where(x => x.Id == id && x.CustomerId == customerId).SingleOrDefaultAsync(cancellationToken);
             if (project == null)
                 throw new NotFoundException(nameof(Project));
-
+            _dbContext.ChangeTracker.Clear();
             _dbContext.Projects.Remove(project);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            _bus.Publish("CUSTOMER_DELETED");
+            _bus.Publish("PROJECT_DELETED");
         }
 
         public async Task PatchAsync(long id, long customerId, string title, DomainType domainType, string domain, string internalUrl, ProjectState state, CancellationToken cancellationToken)
@@ -113,17 +113,17 @@ namespace ZiraLink.Api.Application.Services
             if (!await _httpTools.CheckDomainExists(internalUrl))
                 throw new ApplicationException("Public domain is not allowed");
 
-            if (!string.IsNullOrEmpty(title))
+            if (!string.IsNullOrWhiteSpace(title))
                 project.Title = title;
-            if (!string.IsNullOrEmpty(domain))
+            if (!string.IsNullOrWhiteSpace(domain))
                 project.Domain = domain;
-            if (!string.IsNullOrEmpty(internalUrl))
+            if (!string.IsNullOrWhiteSpace(internalUrl))
                 project.InternalUrl = internalUrl;
             project.DomainType = domainType;
             project.State = state;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
-            _bus.Publish("CUSTOMER_PATCHED");
+            _bus.Publish("PROJECT_PATCHED");
         }
     }
 }
