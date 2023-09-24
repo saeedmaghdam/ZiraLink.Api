@@ -84,7 +84,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                            Title = $"TestTitle{i}",
                            AppProjectViewId = Guid.NewGuid(),
                            AppProjectType = AppProjectType.SharePort,
-                           InternalPort = 2020,
+                           InternalPort = Convert.ToInt32($"202{i}"),
                            DateCreated = DateTime.Now,
                            DateUpdated = DateTime.Now,
                            State = ProjectState.Active,

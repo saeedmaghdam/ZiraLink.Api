@@ -30,7 +30,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region GetCustomerByExternalId
         [Theory]
-        [InlineData("4")]
+        [InlineData("1")]
         public async Task GetCustomerByExternalId_WhenEverythingIsOk_ShouldHasData(string externalId)
         {
             //Arrange
@@ -41,7 +41,11 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             var response = await customerService.GetCustomerByExternalIdAsync(externalId, CancellationToken.None);
             Assert.True(response is Customer);
-            Assert.Equal(externalId, response.ExternalId);
+            Assert.Equal(externalId, response.ExternalId); 
+            Assert.Equal("TestUser1", response.Username);
+            Assert.Equal("TestName1", response.Name);
+            Assert.Equal("User1", response.Family);
+            Assert.Equal("TestUser1@ZiraLink.com", response.Email);
         }
 
         [Theory]
@@ -71,7 +75,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             var response = await customerService.GetAllAsync(CancellationToken.None); 
             Assert.True(response is List<Customer>); 
-            Assert.True(response.Any()); 
+            Assert.True(response.Any());
         } 
         #endregion
 
