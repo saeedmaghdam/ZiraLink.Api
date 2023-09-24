@@ -1,11 +1,17 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
 using Moq;
 using Xunit;
 
+using ZiraLink.Api.Application.Exceptions;
 using ZiraLink.Api.Application.Services;
+using ZiraLink.Api.Application.Tools;
 using ZiraLink.Api.Application.UnitTests.Tools;
 using ZiraLink.Domain;
+using ZiraLink.Domain.Enums;
 
 namespace ZiraLink.Api.Application.UnitTests.Services
 { 
@@ -25,14 +31,55 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             //Arrange
             var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
-   
+            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
 
             var response = await customerService.GetCustomerByExternalIdAsync(externalId, CancellationToken.None);
             Assert.True(response is Customer);
             Assert.Equal(externalId, response.ExternalId);
         }
+
+        [Theory]
+        [InlineData("100")]
+        public async Task GetCustomerByExternalId_WhenExternalIdIsNotExist_ShouldHasData(string externalId)
+        {
+            //Arrange
+            var mockConfiguration = new Mock<IConfiguration>(); 
+            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => customerService.GetCustomerByExternalIdAsync(externalId, CancellationToken.None));
+            Assert.Equal("Customer", exception.Message);
+        }
         #endregion
+
+        #region CreateLocallyAsync
+        [Theory]
+        [InlineData("TestUser", "TestPassword", "TestEmail@email.com", "Test", "Testi")]
+        public async Task CreateLocallyAsync_WhenEverythingIsOk_ShouldBeSucceeded(string externalId, string username, string email, string name, string family)
+        {
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+            
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+              
+            var response = await customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None);
+
+            Assert.NotEqual(Guid.Empty, response);
+
+            var createdRow = await _testTools.AppMemoryDbContext.Customers.Where(x => x.ViewId == response).FirstOrDefaultAsync();
+            Assert.NotNull(createdRow);
+
+            Assert.Equal(username, createdRow.Username);
+            Assert.Equal(email, createdRow.Email);
+            Assert.Equal(name, createdRow.Name);
+            Assert.Equal(family, createdRow.Family);  
+        }
+
+        #endregion
+
     }
 }
