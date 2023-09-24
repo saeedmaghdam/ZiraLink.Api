@@ -33,6 +33,11 @@ namespace ZiraLink.Api.Application.Services
             return customer;
         }
 
+        public async Task<List<Customer>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            return await _dbContext.Customers.AsNoTracking().ToListAsync(cancellationToken);
+        }
+
         public async Task<Guid> CreateLocallyAsync(string externalId, string username, string email, string name, string family, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(username))

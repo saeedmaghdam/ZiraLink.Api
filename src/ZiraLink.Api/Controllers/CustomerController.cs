@@ -47,6 +47,18 @@ namespace ZiraLink.Api.Controllers
         }
 
         /// <summary>
+        /// Returns list of all customer
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("All")]
+        public async Task<ApiResponse<List<Customer>>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            var result = await _customerService.GetAllAsync(cancellationToken);
+            return ApiResponse<List<Customer>>.CreateSuccessResponse(result);
+        }
+
+        /// <summary>
         /// Registers a new customer
         /// </summary>
         /// <param name="model"></param>

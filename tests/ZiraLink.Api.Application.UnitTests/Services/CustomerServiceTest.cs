@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Moq;
+using Moq.Protected;
+
 using Xunit;
 
 using ZiraLink.Api.Application.Exceptions;
@@ -43,7 +45,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData("100")]
+        [InlineData("999")]
         public async Task GetCustomerByExternalId_WhenExternalIdIsNotExist_ShouldHasData(string externalId)
         {
             //Arrange
@@ -57,9 +59,25 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
         #endregion
 
+        #region GetAll
+        [Fact] 
+        public async Task GetAll_ShouldHasData()
+        {
+            //Arrange
+            var mockConfiguration = new Mock<IConfiguration>();
+            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var response = await customerService.GetAllAsync(CancellationToken.None); 
+            Assert.True(response is List<Customer>); 
+            Assert.True(response.Any()); 
+        } 
+        #endregion
+
         #region CreateLocallyAsync
         [Theory]
-        [InlineData("100", "TestUser", "TestEmail@email.com", "Test", "Testi")]
+        [InlineData("10", "TestUser", "TestEmail@email.com", "Test", "Testi")]
         public async Task CreateLocallyAsync_WhenEverythingIsOk_ShouldBeSucceeded(string externalId, string username, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();
@@ -82,7 +100,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData("100", "", "TestEmail@email.com", "Test", "Testi")]
+        [InlineData("10", "", "TestEmail@email.com", "Test", "Testi")]
         public async Task CreateLocallyAsync_WhenUsernameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();
@@ -96,7 +114,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
         
         [Theory]
-        [InlineData("100", "TestUser", "TestEmail@email.com", "", "Testi")]
+        [InlineData("10", "TestUser", "TestEmail@email.com", "", "Testi")]
         public async Task CreateLocallyAsync_WhenNameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();

@@ -54,7 +54,6 @@ namespace ZiraLink.Api.Controllers
             return ApiResponse<List<Project>>.CreateSuccessResponse(result);
         }
 
-
         /// <summary>
         /// Returns a single project
         /// </summary>

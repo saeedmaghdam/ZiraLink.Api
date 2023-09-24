@@ -10,12 +10,12 @@ namespace ZiraLink.Api.Application.Services
 {
     public class AppProjectService : IAppProjectService
     {
-        private readonly ILogger<ProjectService> _logger;
+        private readonly ILogger<AppProjectService> _logger;
         private readonly AppDbContext _dbContext;
         private readonly IBus _bus;
         private readonly IHttpTools _httpTools;
 
-        public AppProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus, IHttpTools httpTools)
+        public AppProjectService(ILogger<AppProjectService> logger, AppDbContext dbContext, IBus bus, IHttpTools httpTools)
         {
             _logger = logger;
             _dbContext = dbContext;
