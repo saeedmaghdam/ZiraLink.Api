@@ -1,21 +1,10 @@
-﻿
-using Castle.Core.Resource;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-
 using Moq;
-using Moq.Protected;
-
-using Xunit;
-
 using ZiraLink.Api.Application.Exceptions;
 using ZiraLink.Api.Application.Services;
-using ZiraLink.Api.Application.Tools;
 using ZiraLink.Api.Application.UnitTests.Tools;
 using ZiraLink.Domain;
-using ZiraLink.Domain.Enums;
 
 namespace ZiraLink.Api.Application.UnitTests.Services
 { 
@@ -35,7 +24,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             //Arrange
             var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
 
@@ -54,7 +43,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             //Arrange
             var mockConfiguration = new Mock<IConfiguration>(); 
-            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
 
@@ -69,7 +58,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             //Arrange
             var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
 
@@ -86,7 +75,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockConfiguration = new Mock<IConfiguration>();
 
-            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
             
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
               
@@ -109,7 +98,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockConfiguration = new Mock<IConfiguration>();
 
-            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
 
@@ -123,7 +112,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockConfiguration = new Mock<IConfiguration>();
 
-            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
 
@@ -137,7 +126,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockConfiguration = new Mock<IConfiguration>();
 
-            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
 
