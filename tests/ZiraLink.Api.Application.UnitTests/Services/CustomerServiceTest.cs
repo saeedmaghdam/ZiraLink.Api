@@ -1,4 +1,6 @@
 ﻿
+using Castle.Core.Resource;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -57,7 +59,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region CreateLocallyAsync
         [Theory]
-        [InlineData("TestUser", "TestPassword", "TestEmail@email.com", "Test", "Testi")]
+        [InlineData("100", "TestUser", "TestEmail@email.com", "Test", "Testi")]
         public async Task CreateLocallyAsync_WhenEverythingIsOk_ShouldBeSucceeded(string externalId, string username, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();
@@ -77,6 +79,48 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal(email, createdRow.Email);
             Assert.Equal(name, createdRow.Name);
             Assert.Equal(family, createdRow.Family);  
+        }
+
+        [Theory]
+        [InlineData("100", "", "TestEmail@email.com", "Test", "Testi")]
+        public async Task CreateLocallyAsync_WhenUsernameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        {
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None));
+            Assert.Equal("username", exception.ParamName);
+        }
+        
+        [Theory]
+        [InlineData("100", "TestUser", "TestEmail@email.com", "", "Testi")]
+        public async Task CreateLocallyAsync_WhenNameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        {
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None));
+            Assert.Equal("name", exception.ParamName);
+        }
+        
+        [Theory]
+        [InlineData("100", "TestUser", "TestEmail@email.com", "Test", "")]
+        public async Task CreateLocallyAsync_WhenFamilyIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        {
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m[It.IsAny<string>()]).Returns("https://ids.ziralink.local:5001");
+
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None));
+            Assert.Equal("family", exception.ParamName);
         }
 
         #endregion
