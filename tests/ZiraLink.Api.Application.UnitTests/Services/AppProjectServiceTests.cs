@@ -26,8 +26,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
 
             var response = await appProjectService.GetAsync(customerId, CancellationToken.None);
 
@@ -44,8 +43,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
             var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
             Assert.Null(customer);
             var response = await appProjectService.GetAsync(customerId, CancellationToken.None);
@@ -59,8 +57,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
             
             var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
             Assert.NotNull(customer);
@@ -81,8 +78,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
 
             var response = await appProjectService.GetAllAsync(CancellationToken.None);
  
@@ -97,8 +93,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
            Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
             
             var response = await appProjectService.GetByIdAsync(id, customerId, CancellationToken.None);
             Assert.NotNull(response);
@@ -115,8 +110,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
             
             var appProjects = _testTools.AppMemoryDbContext.AppProjects.Find(id);
             Assert.Null(appProjects);
@@ -134,8 +128,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
             
             var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
             Assert.Null(customer);
@@ -147,18 +140,16 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region CreateAppProject
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:4000", ProjectState.Active)]
-        public async Task CreateAppProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
+        [InlineData(1, "TestTitle","00000000-0000-0000-0000-000000000000", AppProjectType.SharePort, 3030, ProjectState.Active)]
+        public async Task CreateAppProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, string title, object appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            
-            mockBus.Setup(p => p.Publish(It.IsAny<string>()));
-            mockHttpTools.Setup(p => p.CheckDomainExists(It.IsAny<string>())).ReturnsAsync(true);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
 
-            var response = await appProjectService.CreateAsync(customerId, title, appProjectViewId, appProjectType, internalPort, state, CancellationToken.None);
+            mockBus.Setup(p => p.Publish(It.IsAny<string>()));
+
+            var response = await appProjectService.CreateAsync(customerId, title, Guid.Parse(appProjectViewId.ToString()), appProjectType, internalPort, state, CancellationToken.None);
 
             Assert.NotEqual(Guid.Empty, response);
 
@@ -170,95 +161,72 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal(appProjectType, createdRow.AppProjectType);
             Assert.Equal(internalPort, createdRow.InternalPort);
             Assert.Equal(state, createdRow.State);
-            mockBus.Verify(p => p.Publish("PROJECT_CREATED"), Times.Once());
-            mockHttpTools.Verify(p => p.CheckDomainExists(It.IsAny<string>()), Times.Once());
+            mockBus.Verify(p => p.Publish("APP_PROJECT_CREATED"), Times.Once());
         }
 
         [Theory]
-        [InlineData(1, "", DomainType.Default, "TestDomain", "https://localhost:4000", ProjectState.Active)]
-        public async Task CreateAppProject_WhenTitleIsEmpty_ShouldBeFailed(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
+        [InlineData(1, "", "00000000-0000-0000-0000-000000000000", AppProjectType.SharePort, 3030, ProjectState.Active)]
+        public async Task CreateAppProject_WhenTitleIsEmpty_ShouldBeFailed(long customerId, string title, object appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
             Assert.True(string.IsNullOrWhiteSpace(title));
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
             
-            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => appProjectService.CreateAsync(customerId, title, appProjectViewId, appProjectType, internalPort, state, CancellationToken.None));
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => appProjectService.CreateAsync(customerId, title, Guid.Parse(appProjectViewId.ToString()), appProjectType, internalPort, state, CancellationToken.None));
             Assert.Equal("title", exception.ParamName);
         }
 
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "", "https://localhost:4000", ProjectState.Active)]
-        public async Task CreateAppProject_WhenDomainIsEmpty_ShouldBeFailed(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
+        [InlineData(1, "TestTitle", "00000000-0000-0000-0000-000000000000", AppProjectType.UsePort, 3030, ProjectState.Active)]
+        public async Task CreateAppProject_WhenAppProjectViewIdIsEmpty_ShouldBeFailed(long customerId, string title, object appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            Assert.True(string.IsNullOrWhiteSpace(domain)); 
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
 
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            
-            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => appProjectService.CreateAsync(customerId, title, appProjectViewId, appProjectType, internalPort, state, CancellationToken.None));
-            Assert.Equal("domain", exception.ParamName);
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => appProjectService.CreateAsync(customerId, title, Guid.Parse(appProjectViewId.ToString()), appProjectType, internalPort, state, CancellationToken.None));
+            Assert.Equal("appProjectViewId", exception.ParamName);
         }
 
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain", "", ProjectState.Active)]
-        public async Task CreateAppProject_WhenInternalUrlIsEmpty_ShouldBeFailed(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
+        [InlineData(1, "TestTitle", "00000000-0000-0000-0000-000000000000", AppProjectType.SharePort, 99999, ProjectState.Active)]
+        public async Task CreateAppProject_WhenInternalPortIsNotValid_ShouldBeFailed(long customerId, string title, object appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            Assert.True(string.IsNullOrWhiteSpace(internalUrl)); 
+            Assert.True(internalPort < 1 || internalPort > 65535);
 
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            
-            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => appProjectService.CreateAsync(customerId, title, appProjectViewId, appProjectType, internalPort, state, CancellationToken.None));
-            Assert.Equal("internalUrl", exception.ParamName);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
+
+            var exception = await Assert.ThrowsAsync<ApplicationException>(() => appProjectService.CreateAsync(customerId, title, Guid.Parse(appProjectViewId.ToString()), appProjectType, internalPort, state, CancellationToken.None));
+            Assert.Equal("Port range is not valid", exception.Message);
         }
 
         [Theory]
-        [InlineData(0, "TestTitle", DomainType.Default, "TestDomain", "https://localhost:4000", ProjectState.Active)]
-        public async Task CreateAppProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
+        [InlineData(0, "TestTitle", "00000000-0000-0000-0000-000000000000", AppProjectType.SharePort, 3030, ProjectState.Active)]
+        public async Task CreateAppProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long customerId, string title, object appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => appProjectService.CreateAsync(customerId, title, appProjectViewId, appProjectType, internalPort, state, CancellationToken.None));
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => appProjectService.CreateAsync(customerId, title, Guid.Parse(appProjectViewId.ToString()), appProjectType, internalPort, state, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
         }
-
+        
         [Theory]
-        [InlineData(1, "TestTitle", DomainType.Default, "TestDomain1", "https://localhost:4000", ProjectState.Active)]
-        public async Task CreateAppProject_WhenDomainAlreadyExists_ShouldBeFailed(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
-
+        [InlineData(1, "TestTitle", "af43138e-5f62-4dda-807d-1feed7913636", AppProjectType.UsePort, 3030, ProjectState.Active)]
+        public async Task CreateAppProject_WhenAppProjectViewIdIsNotExist_ShouldBeFailed(long customerId, string title, object appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            
-            var exception = await Assert.ThrowsAsync<ApplicationException>(() => appProjectService.CreateAsync(customerId, title, appProjectViewId, appProjectType, internalPort, state, CancellationToken.None));
-            Assert.Equal("Domain already exists", exception.Message);
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => appProjectService.CreateAsync(customerId, title, Guid.Parse(appProjectViewId.ToString()), appProjectType, internalPort, state, CancellationToken.None));
+            Assert.Equal("AppProject", exception.Message);
         }
 
-        [Theory]
-        [InlineData(1, "TestTitleN", DomainType.Default, "TestDomainN", "https://google.com", ProjectState.Active)]
-        public async Task CreateAppProject_WhenInternalUrlIsAPublicUrl_ShouldBeFailed(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state)
-        {
-            Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
-            Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            
-            var exception = await Assert.ThrowsAsync<ApplicationException>(() => appProjectService.CreateAsync(customerId, title, appProjectViewId, appProjectType, internalPort, state, CancellationToken.None));
-
-            mockHttpTools.Verify(p => p.CheckDomainExists(internalUrl), Times.Once());
-            Assert.Equal("Public domain is not allowed", exception.Message);
-        }
         #endregion
 
     }

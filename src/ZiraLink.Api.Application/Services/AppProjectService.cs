@@ -13,14 +13,12 @@ namespace ZiraLink.Api.Application.Services
         private readonly ILogger<AppProjectService> _logger;
         private readonly AppDbContext _dbContext;
         private readonly IBus _bus;
-        private readonly IHttpTools _httpTools;
 
-        public AppProjectService(ILogger<AppProjectService> logger, AppDbContext dbContext, IBus bus, IHttpTools httpTools)
+        public AppProjectService(ILogger<AppProjectService> logger, AppDbContext dbContext, IBus bus)
         {
             _logger = logger;
             _dbContext = dbContext;
             _bus = bus;
-            _httpTools = httpTools;
         }
 
         public async Task<List<AppProject>> GetAsync(long customerId, CancellationToken cancellationToken)
