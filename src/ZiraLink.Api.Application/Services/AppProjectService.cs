@@ -40,7 +40,7 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<Guid> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state, CancellationToken cancellationToken)
+        public async Task<Guid> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, PortType portType, int internalPort, ProjectState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
@@ -63,6 +63,7 @@ namespace ZiraLink.Api.Application.Services
                 CustomerId = customer.Id,
                 Title = title,
                 AppProjectType = appProjectType,
+                PortType = portType,
                 InternalPort = internalPort,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
@@ -87,7 +88,7 @@ namespace ZiraLink.Api.Application.Services
             _bus.Publish("APP_PROJECT_DELETED");
         }
 
-        public async Task PatchAsync(long id, long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state, CancellationToken cancellationToken)
+        public async Task PatchAsync(long id, long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, PortType portType, int internalPort, ProjectState state, CancellationToken cancellationToken)
         {
             if (appProjectType == AppProjectType.UsePort && (!appProjectViewId.HasValue || appProjectViewId == Guid.Empty))
                 throw new ArgumentNullException(nameof(appProjectViewId));
@@ -110,6 +111,7 @@ namespace ZiraLink.Api.Application.Services
 
             appProject.AppProjectViewId = appProjectViewId; 
             appProject.AppProjectType = appProjectType;
+            appProject.PortType = portType;
             appProject.State = state;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
