@@ -42,7 +42,7 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<long> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state, CancellationToken cancellationToken)
+        public async Task<Guid> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
@@ -75,7 +75,7 @@ namespace ZiraLink.Api.Application.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
             _bus.Publish("APP_PROJECT_CREATED");
 
-            return appProject.Id;
+            return appProject.ViewId;
         }
 
         public async Task DeleteAsync(long customerId, long id, CancellationToken cancellationToken)
