@@ -102,7 +102,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal("TestDomain1", response.Domain);
             Assert.Equal(DomainType.Default, response.DomainType);
             Assert.Equal("http://localhost:3001", response.InternalUrl);
-            
         }
 
         [Theory]
