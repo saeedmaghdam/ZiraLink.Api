@@ -229,5 +229,56 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #endregion
 
+        #region DeleteProject
+        [Theory]
+        [InlineData(2, 2)]
+        public async Task DeleteAppProject_WhenEverythingIsOk_ShouldBeSucceeded(long customerId, long id)
+        {
+            Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
+
+            mockBus.Setup(p => p.Publish(It.IsAny<string>()));
+
+            await appProjectService.DeleteAsync(customerId, id, CancellationToken.None);
+
+            mockBus.Verify(p => p.Publish("APP_PROJECT_DELETED"), Times.Once());
+
+        }
+
+        [Theory]
+        [InlineData(2, 0)]
+        public async Task DeleteAppProject_WhenIdIsNotExist_ShouldBeFailed(long customerId, long id)
+        {
+            Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
+
+            var appProjects = _testTools.AppMemoryDbContext.AppProjects.Find(id);
+            Assert.Null(appProjects);
+
+            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.NotNull(customer);
+
+            await Assert.ThrowsAsync<NotFoundException>(() => appProjectService.DeleteAsync(customerId, id, CancellationToken.None));
+
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        public async Task DeleteAppProject_WhenCustomerIdIsNotExist_ShouldBeFailed(long customerId, long id)
+        {
+            Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
+
+            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.Null(customer);
+
+            await Assert.ThrowsAsync<NotFoundException>(() => appProjectService.DeleteAsync(customerId, id, CancellationToken.None));
+
+        }
+        #endregion
+
     }
 }
