@@ -30,6 +30,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             var response = await projectService.GetAsync(customerId, CancellationToken.None);
             Assert.True(response.Any());
+            Assert.Equal(customerId, response[0].CustomerId); 
             Assert.Equal("TestTitle1", response[0].Title);
             Assert.Equal("TestDomain1", response[0].Domain);
             Assert.Equal(DomainType.Default, response[0].DomainType);

@@ -69,7 +69,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                            State = ProjectState.Active,
                        }
                    );
-                } 
+                }
             }
             if (!AppMemoryDbContext.AppProjects.Any())
             {
@@ -84,13 +84,13 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                            Title = $"TestTitle{i}",
                            AppProjectViewId = Guid.NewGuid(),
                            AppProjectType = AppProjectType.SharePort,
-                           InternalPort = Convert.ToInt32($"202{i}"),
+                           InternalPort = 2020 + i,
                            DateCreated = DateTime.Now,
                            DateUpdated = DateTime.Now,
                            State = ProjectState.Active,
                        }
                    );
-                } 
+                }
             }
 
             if (!AppMemoryDbContext.Customers.Any(x => x.ExternalId == (countCustomer + 1).ToString()))
