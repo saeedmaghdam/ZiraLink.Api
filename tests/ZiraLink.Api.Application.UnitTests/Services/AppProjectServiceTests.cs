@@ -21,14 +21,14 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region GetAppProject
         [Theory]
-        [InlineData(1)]
-        public async Task GetAppProject_WhenEverythingIsOk_ShouldHasData(long customerId)
+        [InlineData(1, AppProjectType.SharePort)]
+        public async Task GetAppProject_WhenEverythingIsOk_ShouldHasData(long customerId, AppProjectType appProjectType)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
 
-            var response = await appProjectService.GetAsync(customerId, CancellationToken.None);
+            var response = await appProjectService.GetAsync(customerId, appProjectType, CancellationToken.None);
 
             Assert.True(response.Any()); 
             Assert.Equal(customerId, response[0].CustomerId); 
@@ -38,22 +38,22 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(0)]
-        public async Task GetAppProject_WhenCustomerIsNotExist_ShouldBeNull(long customerId)
+        [InlineData(0, AppProjectType.SharePort)]
+        public async Task GetAppProject_WhenCustomerIsNotExist_ShouldBeNull(long customerId, AppProjectType appProjectType)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
             AppProjectService appProjectService = new AppProjectService(mockLoggerAppProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object);
             var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
             Assert.Null(customer);
-            var response = await appProjectService.GetAsync(customerId, CancellationToken.None);
+            var response = await appProjectService.GetAsync(customerId, appProjectType, CancellationToken.None);
 
             Assert.False(response.Any());
         }
 
         [Theory]
-        [InlineData(4)]
-        public async Task GetAppProject_WhenCustomerIsExistWithNoAppProjects_ShouldBeNull(long customerId)
+        [InlineData(4, AppProjectType.SharePort)]
+        public async Task GetAppProject_WhenCustomerIsExistWithNoAppProjects_ShouldBeNull(long customerId, AppProjectType appProjectType)
         {
             Mock<ILogger<AppProjectService>> mockLoggerAppProjectService = new Mock<ILogger<AppProjectService>>();
             Mock<IBus> mockBus = new Mock<IBus>();
@@ -66,7 +66,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal("TestName4", customer.Name);
             Assert.Equal("User4", customer.Family);
             Assert.Equal("TestUser4@ZiraLink.com", customer.Email);
-            var response = await appProjectService.GetAsync(customerId, CancellationToken.None);
+            var response = await appProjectService.GetAsync(customerId, appProjectType, CancellationToken.None);
 
             Assert.False(response.Any());
         }

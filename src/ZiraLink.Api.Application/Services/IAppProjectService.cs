@@ -11,7 +11,7 @@ namespace ZiraLink.Api.Application.Services
 {
     public interface IAppProjectService
     {
-        Task<List<AppProject>> GetAsync(long customerId, CancellationToken cancellationToken);
+        Task<List<AppProject>> GetAsync(long customerId, AppProjectType appProjectType, CancellationToken cancellationToken);
         Task<List<AppProject>> GetAllAsync(CancellationToken cancellationToken);
         Task<AppProject> GetByIdAsync(long id, long customerId, CancellationToken cancellationToken);
         Task<Guid> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, PortType portType, int internalPort, ProjectState state, CancellationToken cancellationToken);
