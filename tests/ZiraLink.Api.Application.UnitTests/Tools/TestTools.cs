@@ -16,7 +16,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
         public void Initialize(string testClassName)
         {
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-           
+
             dbContextOptionsBuilder.UseInMemoryDatabase($"AppDbContext_{testClassName}");
             DbContextOptions<AppDbContext>? contextOptions = dbContextOptionsBuilder.Options;
             AppMemoryDbContext = new AppDbContext(contextOptions);
@@ -33,7 +33,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
             if (!AppMemoryDbContext.Customers.Any())
             {
                 // Add new customer
-               
+
                 for (int i = 1; i <= countCustomer; i++)
                 {
                     customerList.Add(new Customer
@@ -52,14 +52,13 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
 
             if (!AppMemoryDbContext.Projects.Any())
             {
-                // Add new project 
-                List<Project> projectList = new List<Project>();  
+                // Add new project  
                 for (int i = 1; i <= customerList.Count; i++)
                 {
-                    projectList.Add(
+                    AppMemoryDbContext.Projects.Add(
                        new Project
                        {
-                           ViewId = new Guid(),
+                           ViewId = Guid.NewGuid(),
                            Customer = customerList[i - 1],
                            Title = $"TestTitle{i}",
                            DomainType = DomainType.Default,
@@ -71,10 +70,30 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                        }
                    );
                 }
-
-                AppMemoryDbContext.Projects.AddRange(projectList);
             }
-            if (!AppMemoryDbContext.Customers.Any(x=>x.ExternalId == (countCustomer + 1).ToString()))
+            if (!AppMemoryDbContext.AppProjects.Any())
+            {
+                // Add new project  
+                for (int i = 1; i <= customerList.Count; i++)
+                {
+                    AppMemoryDbContext.AppProjects.Add(
+                       new AppProject
+                       {
+                           ViewId = Guid.NewGuid(),
+                           Customer = customerList[i - 1],
+                           Title = $"TestTitle{i}",
+                           AppProjectViewId = Guid.NewGuid(),
+                           AppProjectType = AppProjectType.SharePort,
+                           InternalPort = 2020 + i,
+                           DateCreated = DateTime.Now,
+                           DateUpdated = DateTime.Now,
+                           State = ProjectState.Active,
+                       }
+                   );
+                }
+            }
+
+            if (!AppMemoryDbContext.Customers.Any(x => x.ExternalId == (countCustomer + 1).ToString()))
             {
                 AppMemoryDbContext.Customers.Add(new Customer
                 {
@@ -87,11 +106,11 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                 });
             }
             AppMemoryDbContext.SaveChangesAsync();
-/*
-row 1 : readonly
-row 2 : delete
-row 3 : patch
-*/
+            /*
+            row 1 : readonly
+            row 2 : delete
+            row 3 : patch
+            */
         }
 
     }

@@ -8,7 +8,7 @@ using ZiraLink.Api.Application.UnitTests.Tools;
 using ZiraLink.Api.Application.Exceptions;
 
 namespace ZiraLink.Api.Application.UnitTests.Services
-{ 
+{
     public class ProjectServiceTests
     {
         private readonly TestTools _testTools;
@@ -17,6 +17,129 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             _testTools = new TestTools();
             _testTools.Initialize(nameof(ProjectServiceTests));
         }
+
+        #region GetProject
+        [Theory]
+        [InlineData(1)]
+        public async Task GetProject_WhenEverythingIsOk_ShouldHasData(long customerId)
+        {
+            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+
+            var response = await projectService.GetAsync(customerId, CancellationToken.None);
+            Assert.True(response.Any());
+            Assert.Equal(customerId, response[0].CustomerId); 
+            Assert.Equal("TestTitle1", response[0].Title);
+            Assert.Equal("TestDomain1", response[0].Domain);
+            Assert.Equal(DomainType.Default, response[0].DomainType);
+            Assert.Equal("http://localhost:3001", response[0].InternalUrl);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        public async Task GetProject_WhenCustomerIsNotExist_ShouldBeNull(long customerId)
+        {
+            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.Null(customer);
+            var response = await projectService.GetAsync(customerId, CancellationToken.None);
+            Assert.False(response.Any());
+        }
+
+        [Theory]
+        [InlineData(4)]
+        public async Task GetProject_WhenCustomerIsExistWithNoProjects_ShouldBeNull(long customerId)
+        {
+            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.NotNull(customer);
+            Assert.Equal("4", customer.ExternalId); 
+            Assert.Equal("TestUser4", customer.Username);
+            Assert.Equal("TestName4", customer.Name);
+            Assert.Equal("User4", customer.Family);
+            Assert.Equal("TestUser4@ZiraLink.com", customer.Email);
+            var response = await projectService.GetAsync(customerId, CancellationToken.None);
+            Assert.False(response.Any());
+        }
+        #endregion
+
+        #region GetAllProjects
+        [Fact]
+        public async Task GetAllProjects_ShouldHasData()
+        {
+            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+
+            var response = await projectService.GetAllAsync(CancellationToken.None);
+            Assert.True(response.Any());
+        }
+        #endregion
+
+        #region GetByIdProject
+        [Theory]
+        [InlineData(1, 1)]
+        public async Task GetByIdProject_WhenEverythingIsOk_ShouldHasData(long id, long customerId)
+        {
+            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+
+            var response = await projectService.GetByIdAsync(id, customerId, CancellationToken.None);
+            Assert.NotNull(response);
+            Assert.Equal(id, response.Id);
+            Assert.Equal(customerId, response.CustomerId); 
+            Assert.Equal("TestTitle1", response.Title);
+            Assert.Equal("TestDomain1", response.Domain);
+            Assert.Equal(DomainType.Default, response.DomainType);
+            Assert.Equal("http://localhost:3001", response.InternalUrl);
+        }
+
+        [Theory]
+        [InlineData(0, 1)]
+        public async Task GetByIdProject_WhenIdIsNotExist_ShouldBeNull(long id, long customerId)
+        {
+            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+
+            var project = _testTools.AppMemoryDbContext.Projects.Find(id);
+            Assert.Null(project);
+
+            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.NotNull(customer);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
+            Assert.Equal("Customer", exception.Message);
+        }
+
+        [Theory]
+        [InlineData(1, 0)]
+        public async Task GetByIdProject_WhenIdCustomerIdIsNotExist_ShouldBeNull(long id, long customerId)
+        {
+            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
+            Mock<IBus> mockBus = new Mock<IBus>();
+            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
+            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
+
+            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
+            Assert.Null(customer);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
+            Assert.Equal("Customer", exception.Message);
+        }
+        #endregion
 
         #region CreateProject
         [Theory]
@@ -137,116 +260,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
             mockHttpTools.Verify(p => p.CheckDomainExists(internalUrl), Times.Once());
             Assert.Equal("Public domain is not allowed", exception.Message);
-        }
-        #endregion
-
-        #region GetProject
-        [Theory]
-        [InlineData(1)]
-        public async Task GetProject_WhenEverythingIsOk_ShouldHasData(long customerId)
-        {
-            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
-            Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-
-            var response = await projectService.GetAsync(customerId, CancellationToken.None);
-            Assert.True(response.Any());
-        }
-
-        [Theory]
-        [InlineData(0)]
-        public async Task GetProject_WhenCustomerIsNotExist_ShouldBeNull(long customerId)
-        {
-            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
-            Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
-            Assert.Null(customer);
-            var response = await projectService.GetAsync(customerId, CancellationToken.None);
-            Assert.False(response.Any());
-        }
-
-        [Theory]
-        [InlineData(4)]
-        public async Task GetProject_WhenCustomerIsExistWithNoProjects_ShouldBeNull(long customerId)
-
-        {
-            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
-            Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
-            Assert.NotNull(customer);
-            var response = await projectService.GetAsync(customerId, CancellationToken.None);
-            Assert.False(response.Any());
-        }
-        #endregion
-
-        #region GetAllProjects
-        [Fact]
-        public async Task GetAllProjects_ShouldHasData()
-        {
-            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
-            Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-
-            var response = await projectService.GetAllAsync(CancellationToken.None);
-            Assert.True(response.Any());
-        }
-        #endregion
-
-        #region GetByIdProject
-        [Theory]
-        [InlineData(1, 1)]
-        public async Task GetByIdProject_WhenEverythingIsOk_ShouldHasData(long id, long customerId)
-        {
-            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
-            Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-
-            var response = await projectService.GetByIdAsync(id, customerId, CancellationToken.None);
-            Assert.NotNull(response);
-            Assert.Equal(id, response.Id);
-            Assert.Equal(customerId, response.CustomerId);
-        }
-
-        [Theory]
-        [InlineData(0, 1)]
-        public async Task GetByIdProject_WhenIdIsNotExist_ShouldBeNull(long id, long customerId)
-        {
-            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
-            Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-
-            var project = _testTools.AppMemoryDbContext.Projects.Find(id);
-            Assert.Null(project);
-
-            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
-            Assert.NotNull(customer);
-
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
-            Assert.Equal("Customer", exception.Message);
-        }
-
-        [Theory]
-        [InlineData(1, 0)]
-        public async Task GetByIdProject_WhenIdCustomerIdIsNotExist_ShouldBeNull(long id, long customerId)
-        {
-            Mock<ILogger<ProjectService>> mockLoggerProjectService = new Mock<ILogger<ProjectService>>();
-            Mock<IBus> mockBus = new Mock<IBus>();
-            Mock<IHttpTools> mockHttpTools = new Mock<IHttpTools>();
-            ProjectService projectService = new ProjectService(mockLoggerProjectService.Object, _testTools.AppMemoryDbContext, mockBus.Object, mockHttpTools.Object);
-
-            var customer = _testTools.AppMemoryDbContext.Customers.Find(customerId);
-            Assert.Null(customer);
-
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => projectService.GetByIdAsync(id, customerId, CancellationToken.None));
-            Assert.Equal("Customer", exception.Message);
         }
         #endregion
 

@@ -10,22 +10,20 @@ namespace ZiraLink.Api.Application.Services
 {
     public class AppProjectService : IAppProjectService
     {
-        private readonly ILogger<ProjectService> _logger;
+        private readonly ILogger<AppProjectService> _logger;
         private readonly AppDbContext _dbContext;
         private readonly IBus _bus;
-        private readonly IHttpTools _httpTools;
 
-        public AppProjectService(ILogger<ProjectService> logger, AppDbContext dbContext, IBus bus, IHttpTools httpTools)
+        public AppProjectService(ILogger<AppProjectService> logger, AppDbContext dbContext, IBus bus)
         {
             _logger = logger;
             _dbContext = dbContext;
             _bus = bus;
-            _httpTools = httpTools;
         }
 
-        public async Task<List<AppProject>> GetAsync(long customerId, CancellationToken cancellationToken)
+        public async Task<List<AppProject>> GetAsync(long customerId, AppProjectType appProjectType, CancellationToken cancellationToken)
         {
-            return await _dbContext.AppProjects.Include(x => x.Customer).AsNoTracking().Where(x => x.Customer.Id == customerId).ToListAsync(cancellationToken);
+            return await _dbContext.AppProjects.Include(x => x.Customer).AsNoTracking().Where(x => x.Customer.Id == customerId && x.AppProjectType == appProjectType).ToListAsync(cancellationToken);
         }
 
         public async Task<List<AppProject>> GetAllAsync(CancellationToken cancellationToken)
@@ -42,7 +40,7 @@ namespace ZiraLink.Api.Application.Services
             return project;
         }
 
-        public async Task<long> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state, CancellationToken cancellationToken)
+        public async Task<Guid> CreateAsync(long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, PortType portType, int internalPort, ProjectState state, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentNullException(nameof(title));
@@ -65,6 +63,7 @@ namespace ZiraLink.Api.Application.Services
                 CustomerId = customer.Id,
                 Title = title,
                 AppProjectType = appProjectType,
+                PortType = portType,
                 InternalPort = internalPort,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
@@ -75,7 +74,7 @@ namespace ZiraLink.Api.Application.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
             _bus.Publish("APP_PROJECT_CREATED");
 
-            return appProject.Id;
+            return appProject.ViewId;
         }
 
         public async Task DeleteAsync(long customerId, long id, CancellationToken cancellationToken)
@@ -89,7 +88,7 @@ namespace ZiraLink.Api.Application.Services
             _bus.Publish("APP_PROJECT_DELETED");
         }
 
-        public async Task PatchAsync(long id, long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, int internalPort, ProjectState state, CancellationToken cancellationToken)
+        public async Task PatchAsync(long id, long customerId, string title, Guid? appProjectViewId, AppProjectType appProjectType, PortType portType, int internalPort, ProjectState state, CancellationToken cancellationToken)
         {
             if (appProjectType == AppProjectType.UsePort && (!appProjectViewId.HasValue || appProjectViewId == Guid.Empty))
                 throw new ArgumentNullException(nameof(appProjectViewId));
@@ -101,7 +100,7 @@ namespace ZiraLink.Api.Application.Services
             var appProject = await _dbContext.AppProjects.SingleOrDefaultAsync(x => x.Id == id && x.CustomerId == customerId, cancellationToken);
             if (appProject == null)
                 throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.Id), id) });
-             
+
             if (appProjectType == AppProjectType.UsePort && !_dbContext.AppProjects.Any(x => x.ViewId == appProjectViewId))
                 throw new NotFoundException(nameof(AppProject), new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(nameof(AppProject.AppProjectViewId), appProjectViewId.Value) });
 
@@ -110,8 +109,9 @@ namespace ZiraLink.Api.Application.Services
             if (internalPort >= 1 && internalPort <= 65535)
                 appProject.InternalPort = internalPort;
 
-            appProject.AppProjectViewId = appProjectViewId; 
+            appProject.AppProjectViewId = appProjectViewId;
             appProject.AppProjectType = appProjectType;
+            appProject.PortType = portType;
             appProject.State = state;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
