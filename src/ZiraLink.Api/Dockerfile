@@ -30,4 +30,3 @@ COPY ./certs/ /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
 ENTRYPOINT ["dotnet", "ZiraLink.Api.dll"]
- 
