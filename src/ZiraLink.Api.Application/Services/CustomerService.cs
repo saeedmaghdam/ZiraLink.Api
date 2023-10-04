@@ -182,7 +182,7 @@ namespace ZiraLink.Api.Application.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        private async Task<HttpClient> InitializeHttpClientAsync(CancellationToken cancellationToken)
+        public async Task<HttpClient> InitializeHttpClientAsync(CancellationToken cancellationToken)
         {
             var client = new HttpClient();
             var disco = await client.GetDiscoveryDocumentAsync(_idsUri.ToString(), cancellationToken);
@@ -205,5 +205,7 @@ namespace ZiraLink.Api.Application.Services
 
             return client;
         }
+
+          protected int Count { get; set; }
     }
 }
