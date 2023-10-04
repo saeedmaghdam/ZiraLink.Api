@@ -117,7 +117,11 @@ public static class DependencyResolver
                     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
                     .AddJwtBearer("Bearer", options =>
                     {
-                        options.RequireHttpsMetadata = false;
+                        if (!string.IsNullOrWhiteSpace(configuration["ZIRALINK_USE_HTTP"]) && bool.Parse(configuration["ZIRALINK_USE_HTTP"]!))
+                        {
+                            options.RequireHttpsMetadata = false;
+                        }
+
                         options.Authority = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         options.SaveToken = true;
                         options.TokenValidationParameters = new TokenValidationParameters
@@ -161,7 +165,11 @@ public static class DependencyResolver
                     })
                     .AddOpenIdConnect("oidc", options =>
                     {
-                        options.RequireHttpsMetadata = false;
+                        if (!string.IsNullOrWhiteSpace(configuration["ZIRALINK_USE_HTTP"]) && bool.Parse(configuration["ZIRALINK_USE_HTTP"]!))
+                        {
+                            options.RequireHttpsMetadata = false;
+                        }
+
                         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                         options.Authority = new Uri(configuration["ZIRALINK_URL_IDS"]!).ToString();
                         options.ClientId = "bff";

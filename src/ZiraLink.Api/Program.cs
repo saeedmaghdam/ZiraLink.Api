@@ -47,11 +47,14 @@ context.Database.Migrate();
 if (Configuration["ASPNETCORE_ENVIRONMENT"] == "Test")
     await app.InitializeTestEnvironmentAsync();
 
-app.Use((context, next) =>
+if (string.IsNullOrWhiteSpace(Configuration["ZIRALINK_USE_HTTP"]) || !bool.Parse(Configuration["ZIRALINK_USE_HTTP"]!))
 {
-    context.Request.Scheme = "https";
-    return next(context);
-});
+    app.Use((context, next) =>
+    {
+        context.Request.Scheme = "https";
+        return next(context);
+    });
+}
 app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
@@ -65,7 +68,10 @@ app.UseCors("AllowSpecificOrigins");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.UseHttpsRedirection();
+if (string.IsNullOrWhiteSpace(Configuration["ZIRALINK_USE_HTTP"]) || !bool.Parse(Configuration["ZIRALINK_USE_HTTP"]!))
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseRouting();
 app.UseAuthentication();
