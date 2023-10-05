@@ -6,6 +6,7 @@ using ZiraLink.Domain;
 using IdentityModel.Client;
 using ZiraLink.Api.Application.Framework;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace ZiraLink.Api.Application.Services
 {
@@ -185,7 +186,14 @@ namespace ZiraLink.Api.Application.Services
         private async Task<HttpClient> InitializeHttpClientAsync(CancellationToken cancellationToken)
         {
             var client = new HttpClient();
-            var disco = await client.GetDiscoveryDocumentAsync(_idsUri.ToString(), cancellationToken);
+            var disco = await client.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
+            {
+                Address = _idsUri.ToString(),
+                Policy =
+                {
+                    RequireHttps = string.IsNullOrWhiteSpace(_configuration["ZIRALINK_USE_HTTP"]) || bool.Parse(_configuration["ZIRALINK_USE_HTTP"]!) == false
+                }
+            }, cancellationToken);
             if (disco.IsError)
                 throw new ApplicationException("Failed to get discivery document");
 
