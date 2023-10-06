@@ -14,17 +14,16 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://api.ziralink.local:6002",
+      "applicationUrl": "https://api.ziralink.local:6001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ZIRALINK_CONNECTIONSTRINGS_DB": "Data Source=database.db",
         "ZIRALINK_CONNECTIONSTRINGS_RABBITMQ": "amqp://user:Pass123$@localhost:5772/",
         "ZIRALINK_CONNECTIONSTRINGS_REDIS": "localhost:6479",
         "ZIRALINK_REDIS_PASSWORD": "",
-        "ZIRALINK_URL_IDS": "http://ids.ziralink.local:5002",
-        "ZIRALINK_REDIRECTURI": "http://ziralink.local:4002/signin-result",
-        "ZIRALINK_WEB_URL": "http://ziralink.local:4002",
-        "ZIRALINK_USE_HTTP": "true",
+        "ZIRALINK_URL_IDS": "https://ids.ziralink.local:5001",
+        "ZIRALINK_REDIRECTURI": "https://ziralink.local:4001/signin-result",
+        "ZIRALINK_WEB_URL": "https://ziralink.local:4001",
         "ASPNETCORE_Kestrel__Certificates__Default__Password": "zira_cert",
         "ASPNETCORE_Kestrel__Certificates__Default__Path": "server.pfx"
       }
