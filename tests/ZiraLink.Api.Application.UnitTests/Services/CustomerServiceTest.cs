@@ -74,10 +74,10 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
         #endregion
 
-        #region CreateLocallyAsync
+        #region CreateCustomerLocally
         [Theory]
         [InlineData("10", "TestUser", "TestEmail@email.com", "Test", "Testi")]
-        public async Task CreateLocallyAsync_WhenEverythingIsOk_ShouldBeSucceeded(string externalId, string username, string email, string name, string family)
+        public async Task CreateCustomerLocally_WhenEverythingIsOk_ShouldBeSucceeded(string externalId, string username, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();
 
@@ -100,7 +100,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("10", "", "TestEmail@email.com", "Test", "Testi")]
-        public async Task CreateLocallyAsync_WhenUsernameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        public async Task CreateCustomerLocally_WhenUsernameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();
 
@@ -114,7 +114,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("10", "TestUser", "TestEmail@email.com", "", "Testi")]
-        public async Task CreateLocallyAsync_WhenNameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        public async Task CreateCustomerLocally_WhenNameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();
 
@@ -128,7 +128,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("100", "TestUser", "TestEmail@email.com", "Test", "")]
-        public async Task CreateLocallyAsync_WhenFamilyIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        public async Task CreateCustomerLocally_WhenFamilyIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();
 
@@ -142,10 +142,10 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #endregion
 
-        #region CreateAsync
+        #region CreateCustomer
         [Theory]
         [InlineData("TestUser", "TestPassword", "TestEmail@email.com", "Test", "Testi")]
-        public async Task CreateAsync_WhenEverythingIsOk_ShouldBeSucceeded(string username, string password, string email, string name, string family)
+        public async Task CreateCustomer_WhenEverythingIsOk_ShouldBeSucceeded(string username, string password, string email, string name, string family)
         {
             var mockConfiguration = new Mock<IConfiguration>();
             var mockhttpMessageHandlerMock = new Mock<HttpMessageHandler>();
@@ -183,6 +183,81 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal(email, createdRow.Email);
             Assert.Equal(name, createdRow.Name);
             Assert.Equal(family, createdRow.Family);
+        }
+ 
+        [Theory]
+        [InlineData("", "TestPassword", "TestEmail@email.com", "Test", "Testi")]
+        public async Task CreateCustomer_WhenUsernameIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        { 
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
+
+            Assert.True(string.IsNullOrWhiteSpace(username));
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
+            Assert.Equal("username", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData("TestUser", "", "TestEmail@email.com", "Test", "Testi")]
+        public async Task CreateCustomer_WhenPasswordIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        { 
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
+
+            Assert.True(string.IsNullOrWhiteSpace(password));
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
+            Assert.Equal("password", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData("TestUser", "TestPassword", "", "Test", "Testi")]
+        public async Task CreateCustomer_WhenEmailIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        { 
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
+
+            Assert.True(string.IsNullOrWhiteSpace(email));
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
+            Assert.Equal("email", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData("TestUser", "TestPassword", "TestEmail@email.com", "", "Testi")]
+        public async Task CreateCustomer_WhenNameIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        { 
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
+
+            Assert.True(string.IsNullOrWhiteSpace(name));
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
+            Assert.Equal("name", exception.ParamName);
+        }
+
+        [Theory]
+        [InlineData("TestUser", "TestPassword", "TestEmail@email.com", "Test", "")]
+        public async Task CreateCustomer_WhenFamilyIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        { 
+            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
+
+            Assert.True(string.IsNullOrWhiteSpace(family));
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
+            Assert.Equal("family", exception.ParamName);
         }
 
         #endregion
