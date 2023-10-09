@@ -350,7 +350,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             mockConfiguration.Setup(m => m["ZIRALINK_URL_IDS"]).Returns("https://ids.ziralink.local:5001");
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockConfiguration.Object);
-
+           
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => customerService.ChangePasswordAsync(userId, currentPassword, newPassword, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
         }

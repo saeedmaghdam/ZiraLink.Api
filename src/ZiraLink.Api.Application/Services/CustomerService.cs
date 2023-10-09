@@ -125,8 +125,9 @@ namespace ZiraLink.Api.Application.Services
                 throw new ArgumentNullException(nameof(newPassword));
 
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.ExternalId == userId, cancellationToken);
-            if (customer == null) throw new NotFoundException(nameof(Customer));
-
+            if (customer == null)
+                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), userId) });
+ 
             var client = await InitializeHttpClientAsync(cancellationToken);
 
             var jsonObject = new
@@ -156,7 +157,8 @@ namespace ZiraLink.Api.Application.Services
                 throw new ArgumentNullException(nameof(family));
 
             var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.ExternalId == userId, cancellationToken);
-            if (customer == null) throw new NotFoundException(nameof(Customer));
+             if (customer == null)
+                throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), userId) });
 
             var client = await InitializeHttpClientAsync(cancellationToken);
 
