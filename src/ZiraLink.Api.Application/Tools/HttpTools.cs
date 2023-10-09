@@ -1,4 +1,5 @@
 ﻿using System.Net.NetworkInformation;
+using IdentityModel.Client;
 using ZiraLink.Api.Application.Enums;
 
 namespace ZiraLink.Api.Application.Tools
@@ -48,5 +49,32 @@ namespace ZiraLink.Api.Application.Tools
 
             return true;
         }
+
+        
+        public async Task<HttpClient> InitializeHttpClientAsync(string idsUri, CancellationToken cancellationToken)
+        {
+            var client = new HttpClient();
+            var disco = await client.GetDiscoveryDocumentAsync(idsUri.ToString(), cancellationToken);
+            if (disco.IsError)
+                throw new ApplicationException("Failed to get discivery document");
+
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+
+                ClientId = "back",
+                ClientSecret = "secret",
+                Scope = "ziralink IdentityServerApi"
+            }, cancellationToken);
+
+            if (tokenResponse.IsError)
+                throw new ApplicationException("Failed to get token from identity server");
+
+            client.SetBearerToken(tokenResponse.AccessToken);
+
+            return client;
+        }
+
+
     }
 }

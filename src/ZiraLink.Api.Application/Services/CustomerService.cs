@@ -6,6 +6,7 @@ using ZiraLink.Domain;
 using IdentityModel.Client;
 using ZiraLink.Api.Application.Framework;
 using Microsoft.Extensions.Configuration;
+using ZiraLink.Api.Application.Tools;
 
 namespace ZiraLink.Api.Application.Services
 {
@@ -13,15 +14,17 @@ namespace ZiraLink.Api.Application.Services
     {
         private readonly AppDbContext _dbContext;
         private readonly IConfiguration _configuration;
+        private readonly IHttpTools _httpTools;
 
         private readonly Uri _idsUri;
 
-        public CustomerService(AppDbContext dbContext, IConfiguration configuration)
+        public CustomerService(AppDbContext dbContext, IConfiguration configuration, IHttpTools httpTools)
         {
             _dbContext = dbContext;
             _configuration = configuration;
 
             _idsUri = new Uri(configuration["ZIRALINK_URL_IDS"]!);
+            _httpTools = httpTools;
         }
 
         public async Task<Customer> GetCustomerByExternalIdAsync(string externalId, CancellationToken cancellationToken)
@@ -80,7 +83,7 @@ namespace ZiraLink.Api.Application.Services
             var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.Username == username || x.Email == email, cancellationToken);
             if (customer != null) throw new ApplicationException("Customer exists");
 
-            var client = await InitializeHttpClientAsync(cancellationToken);
+            var client = await _httpTools.InitializeHttpClientAsync(_idsUri.ToString(), cancellationToken);
 
             var jsonObject = new
             {
@@ -128,7 +131,7 @@ namespace ZiraLink.Api.Application.Services
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), userId) });
  
-            var client = await InitializeHttpClientAsync(cancellationToken);
+            var client = await _httpTools.InitializeHttpClientAsync(_idsUri.ToString(), cancellationToken);
 
             var jsonObject = new
             {
@@ -160,7 +163,7 @@ namespace ZiraLink.Api.Application.Services
              if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), userId) });
 
-            var client = await InitializeHttpClientAsync(cancellationToken);
+            var client = await _httpTools.InitializeHttpClientAsync(_idsUri.ToString(), cancellationToken);
 
             var jsonObject = new
             {
@@ -182,30 +185,6 @@ namespace ZiraLink.Api.Application.Services
             customer.Family = family;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task<HttpClient> InitializeHttpClientAsync(CancellationToken cancellationToken)
-        {
-            var client = new HttpClient();
-            var disco = await client.GetDiscoveryDocumentAsync(_idsUri.ToString(), cancellationToken);
-            if (disco.IsError)
-                throw new ApplicationException("Failed to get discivery document");
-
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-
-                ClientId = "back",
-                ClientSecret = "secret",
-                Scope = "ziralink IdentityServerApi"
-            }, cancellationToken);
-
-            if (tokenResponse.IsError)
-                throw new ApplicationException("Failed to get token from identity server");
-
-            client.SetBearerToken(tokenResponse.AccessToken);
-
-            return client;
         }
 
           protected int Count { get; set; }

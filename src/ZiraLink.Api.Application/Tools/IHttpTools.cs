@@ -10,5 +10,6 @@ namespace ZiraLink.Api.Application.Tools
     {
         Task<bool> CheckDomainExists(string domainUrl);
         Task<bool> PingDomain(string simpleDomain);
+        Task<HttpClient> InitializeHttpClientAsync(string idsUri, CancellationToken cancellationToken);
     }
 }
