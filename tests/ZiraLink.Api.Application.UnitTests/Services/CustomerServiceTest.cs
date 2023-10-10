@@ -79,7 +79,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockHttpTools = new Mock<IHttpTools>();
 
-
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
 
             var response = await customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None);
@@ -101,7 +100,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockHttpTools = new Mock<IHttpTools>();
 
-
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None));
@@ -114,7 +112,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockHttpTools = new Mock<IHttpTools>();
 
-
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None));
@@ -126,7 +123,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         public async Task CreateCustomerLocally_WhenFamilyIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
             var mockHttpTools = new Mock<IHttpTools>();
-
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
 
@@ -185,7 +181,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockHttpTools = new Mock<IHttpTools>();
 
-
             Assert.True(string.IsNullOrWhiteSpace(password));
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
 
@@ -213,7 +208,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockHttpTools = new Mock<IHttpTools>();
 
-
             Assert.True(string.IsNullOrWhiteSpace(name));
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
 
@@ -227,7 +221,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         {
             var mockHttpTools = new Mock<IHttpTools>();
 
-
             Assert.True(string.IsNullOrWhiteSpace(family));
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
 
@@ -240,7 +233,6 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         public async Task CreateCustomer_WhenCustomerExists_ShouldBeFailed(string username, string password, string email, string name, string family)
         {
             var mockHttpTools = new Mock<IHttpTools>();
-
 
             CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
 
