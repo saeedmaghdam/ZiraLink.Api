@@ -13,17 +13,11 @@ namespace ZiraLink.Api.Application.Services
     public class CustomerService : ICustomerService
     {
         private readonly AppDbContext _dbContext;
-        private readonly IConfiguration _configuration;
         private readonly IHttpTools _httpTools;
 
-        private readonly Uri _idsUri;
-
-        public CustomerService(AppDbContext dbContext, IConfiguration configuration, IHttpTools httpTools)
+        public CustomerService(AppDbContext dbContext, IHttpTools httpTools)
         {
             _dbContext = dbContext;
-            _configuration = configuration;
-
-            _idsUri = new Uri(configuration["ZIRALINK_URL_IDS"]!);
             _httpTools = httpTools;
         }
 
@@ -83,7 +77,7 @@ namespace ZiraLink.Api.Application.Services
             var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.Username == username || x.Email == email, cancellationToken);
             if (customer != null) throw new ApplicationException("Customer exists");
 
-            var client = await _httpTools.InitializeHttpClientAsync(_idsUri.ToString(), cancellationToken);
+            var httpClient = await _httpTools.InitializeHttpClientAsync(cancellationToken);
 
             var jsonObject = new
             {
@@ -93,15 +87,19 @@ namespace ZiraLink.Api.Application.Services
                 Name = name,
                 Family = family
             };
-            var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
-            var baseUri = _idsUri;
-            var uri = new Uri(baseUri, "User");
-            var response = await client.PostAsync(uri.ToString(), content);
 
-            var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-            var userCreationResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            // var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
+            // var baseUri = _idsUri;
+            // var uri = new Uri(baseUri, "User");
+            // var response = await client.PostAsync(uri.ToString(), content);
+
+            // var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+            // var userCreationResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            var userCreationResult = await _httpTools.CallIDSApis<ApiResponse<string>>(httpClient, "User", jsonObject, HttpMethod.Post, cancellationToken);
             if (!userCreationResult.Status)
                 throw new ApplicationException("User creation on identity server failed");
+
 
             customer = new Customer
             {
@@ -130,8 +128,8 @@ namespace ZiraLink.Api.Application.Services
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.ExternalId == userId, cancellationToken);
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), userId) });
- 
-            var client = await _httpTools.InitializeHttpClientAsync(_idsUri.ToString(), cancellationToken);
+
+            var httpClient = await _httpTools.InitializeHttpClientAsync(cancellationToken);
 
             var jsonObject = new
             {
@@ -139,13 +137,15 @@ namespace ZiraLink.Api.Application.Services
                 CurrentPassword = currentPassword,
                 NewPassword = newPassword
             };
-            var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
-            var baseUri = _idsUri;
-            var uri = new Uri(baseUri, "User/ChangePassword");
-            var response = await client.PatchAsync(uri.ToString(), content);
+            // var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
+            // var baseUri = _idsUri;
+            // var uri = new Uri(baseUri, "User/ChangePassword");
+            // var response = await client.PatchAsync(uri.ToString(), content);
 
-            var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-            var userCreationResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            // var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+            // var userCreationResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            var userCreationResult = await _httpTools.CallIDSApis<ApiResponse<string>>(httpClient, "User/ChangePassword", jsonObject, HttpMethod.Patch, cancellationToken);
             if (!userCreationResult.Status)
                 throw new ApplicationException("User creation on identity server failed");
         }
@@ -160,10 +160,10 @@ namespace ZiraLink.Api.Application.Services
                 throw new ArgumentNullException(nameof(family));
 
             var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.ExternalId == userId, cancellationToken);
-             if (customer == null)
+            if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), userId) });
 
-            var client = await _httpTools.InitializeHttpClientAsync(_idsUri.ToString(), cancellationToken);
+            var httpClient = await _httpTools.InitializeHttpClientAsync(cancellationToken);
 
             var jsonObject = new
             {
@@ -171,15 +171,17 @@ namespace ZiraLink.Api.Application.Services
                 Name = name,
                 Family = family
             };
-            var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
-            var baseUri = _idsUri;
-            var uri = new Uri(baseUri, "User");
-            var response = await client.PatchAsync(uri.ToString(), content);
+            // var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
+            // var baseUri = _idsUri;
+            // var uri = new Uri(baseUri, "User");
+            // var response = await client.PatchAsync(uri.ToString(), content);
 
-            var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-            var userCreationResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            // var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+            // var userCreationResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            var userCreationResult = await _httpTools.CallIDSApis<ApiResponse<string>>(httpClient, "User", jsonObject, HttpMethod.Post, cancellationToken);
             if (!userCreationResult.Status)
-                throw new ApplicationException("Updating profile on identity server failed");
+                throw new ApplicationException("User creation on identity server failed");
 
             customer.Name = name;
             customer.Family = family;
@@ -187,6 +189,6 @@ namespace ZiraLink.Api.Application.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-          protected int Count { get; set; }
+        protected int Count { get; set; }
     }
 }
