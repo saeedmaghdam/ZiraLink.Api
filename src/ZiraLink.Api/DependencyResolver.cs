@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using StackExchange.Redis;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Enums;
@@ -201,6 +202,7 @@ namespace ZiraLink.Api
                                 };
                                 handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                                 handler.SslProtocols = SslProtocols.Tls12;
+                                Log.Information($"Password! {configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]}");
                                 handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
 
                                 options.BackchannelHttpHandler = handler;
