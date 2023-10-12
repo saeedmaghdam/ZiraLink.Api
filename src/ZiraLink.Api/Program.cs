@@ -13,7 +13,6 @@ using ZiraLink.Api.HostingExtensions;
 var builder = WebApplication.CreateBuilder(args);
 
 var pathToExe = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location);
-Directory.SetCurrentDirectory(pathToExe!);
 
 IConfiguration Configuration = new ConfigurationBuilder()
     .SetBasePath(pathToExe)

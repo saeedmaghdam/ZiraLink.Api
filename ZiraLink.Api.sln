@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZiraLink.Domain", "src\Zira
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZiraLink.Api.Application.UnitTests", "tests\ZiraLink.Api.Application.UnitTests\ZiraLink.Api.Application.UnitTests.csproj", "{C727EC3A-31ED-4C95-92BA-AFA2B9E283AC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AF715FE1-F6FF-4889-A83C-10C52895E5B9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1F48DFA1-CB64-4C33-BA67-4165BE7768A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +40,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1F62581A-8B1D-4AA3-8EAC-7CD326A7DE94} = {AF715FE1-F6FF-4889-A83C-10C52895E5B9}
+		{37E9B9AA-7C10-4CF5-8975-5EFC641283A7} = {AF715FE1-F6FF-4889-A83C-10C52895E5B9}
+		{641BADF6-F83C-4431-AFEB-ADC7FA6B4FE0} = {AF715FE1-F6FF-4889-A83C-10C52895E5B9}
+		{C727EC3A-31ED-4C95-92BA-AFA2B9E283AC} = {1F48DFA1-CB64-4C33-BA67-4165BE7768A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {45EDB041-8EC9-41E1-AC17-76AA4D4C984B}
