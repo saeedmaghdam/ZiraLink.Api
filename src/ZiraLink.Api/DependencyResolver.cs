@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Serilog;
 using StackExchange.Redis;
 using ZiraLink.Api.Application;
 using ZiraLink.Api.Application.Enums;
@@ -23,30 +22,8 @@ namespace ZiraLink.Api
 {
     public static class DependencyResolver
     {
-        private static void PrintAllOptions(IConfiguration configuration, IEnumerable<IConfigurationSection> sections, string parentKey)
-        {
-            foreach (var section in sections)
-            {
-                string currentKey = !string.IsNullOrEmpty(parentKey) ? $"{parentKey}:{section.Key}" : section.Key;
-                string value = section.Value;
-
-                if (section.GetChildren().Any())
-                {
-                    // If this is a section, recursively print its children
-                    PrintAllOptions(configuration, section.GetChildren(), currentKey);
-                }
-                else
-                {
-                    // If it's a leaf node, print the key and value
-                    Log.Information($"{currentKey}: {value}");
-                }
-            }
-        }
-
         public static void Register(this IServiceCollection services, IConfiguration configuration, string pathToExe)
         {
-            PrintAllOptions(configuration, configuration.GetChildren(), string.Empty);
-
             IdentityModelEventSource.ShowPII = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
@@ -80,7 +57,7 @@ namespace ZiraLink.Api
                     };
                     handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                     handler.SslProtocols = SslProtocols.Tls12;
-                    handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
+                    handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel:Certificates:Default:Password"]!));
 
                     return handler;
                 });
@@ -168,7 +145,7 @@ namespace ZiraLink.Api
                                 };
                                 handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                                 handler.SslProtocols = SslProtocols.Tls12;
-                                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
+                                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel:Certificates:Default:Password"]!));
 
                                 options.BackchannelHttpHandler = handler;
                             }
@@ -224,7 +201,7 @@ namespace ZiraLink.Api
                                 };
                                 handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                                 handler.SslProtocols = SslProtocols.Tls12;
-                                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
+                                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel:Certificates:Default:Password"]!));
 
                                 options.BackchannelHttpHandler = handler;
                             }
