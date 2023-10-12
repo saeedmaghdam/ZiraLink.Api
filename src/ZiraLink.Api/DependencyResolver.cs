@@ -57,7 +57,7 @@ namespace ZiraLink.Api
                     };
                     handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                     handler.SslProtocols = SslProtocols.Tls12;
-                    handler.ClientCertificates.Add(new X509Certificate2(Path.Combine("..", "..", "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
+                    handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
 
                     return handler;
                 });
@@ -145,7 +145,7 @@ namespace ZiraLink.Api
                                 };
                                 handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                                 handler.SslProtocols = SslProtocols.Tls12;
-                                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine("..", "..", "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
+                                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
 
                                 options.BackchannelHttpHandler = handler;
                             }
@@ -201,7 +201,7 @@ namespace ZiraLink.Api
                                 };
                                 handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                                 handler.SslProtocols = SslProtocols.Tls12;
-                                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine("..", "..", "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
+                                handler.ClientCertificates.Add(new X509Certificate2(Path.Combine(pathToExe, "certs", "s3d-localhost-server.pfx"), configuration["ASPNETCORE_Kestrel__Certificates__Default__Password"]!));
 
                                 options.BackchannelHttpHandler = handler;
                             }
