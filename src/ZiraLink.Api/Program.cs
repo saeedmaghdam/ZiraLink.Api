@@ -1,4 +1,4 @@
-﻿using System.Reflection; 
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
@@ -43,8 +43,7 @@ var app = builder.Build();
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
 context.Database.Migrate();
 
-if (Configuration["ASPNETCORE_ENVIRONMENT"] == "Test")
-    await app.InitializeTestEnvironmentAsync();
+await app.InitializeTestEnvironmentAsync(Configuration);
 
 if (string.IsNullOrWhiteSpace(Configuration["ZIRALINK_USE_HTTP"]) || !bool.Parse(Configuration["ZIRALINK_USE_HTTP"]!))
 {
