@@ -37,7 +37,7 @@ namespace ZiraLink.Api.HostingExtensions
                     ViewId = Guid.NewGuid(),
                     Title = "Weather Forecasts",
                     State = Domain.Enums.ProjectState.Active,
-                    InternalUrl = "https://host.docker.internal:10051",
+                    InternalUrl = "https://swa.localdev.me:10051",
                     Customer = customer,
                     DateCreated = DateTime.Now,
                     DateUpdated = DateTime.Now,
