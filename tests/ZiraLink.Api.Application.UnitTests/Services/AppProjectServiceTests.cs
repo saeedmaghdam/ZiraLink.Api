@@ -2,11 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using ZiraLink.Api.Application.Services;
-using ZiraLink.Api.Application.Tools;
 using ZiraLink.Domain.Enums;
 using ZiraLink.Api.Application.UnitTests.Tools;
 using ZiraLink.Api.Application.Exceptions;
-using ZiraLink.Domain;
 
 namespace ZiraLink.Api.Application.UnitTests.Services
 {
