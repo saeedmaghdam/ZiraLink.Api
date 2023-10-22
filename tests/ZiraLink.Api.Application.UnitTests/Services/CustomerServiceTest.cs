@@ -30,9 +30,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         public async Task GetCustomerByExternalId_WhenEverythingIsOk_ShouldHasData(string externalId)
         {
             //Arrange
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var response = await customerService.GetCustomerByExternalIdAsync(externalId, CancellationToken.None);
             Assert.True(response is Customer);
@@ -40,7 +40,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal("TestUser1", response.Username);
             Assert.Equal("TestName1", response.Name);
             Assert.Equal("User1", response.Family);
-            Assert.Equal("TestUser1@ZiraLink.com", response.Email);
+            Assert.Equal("TestUser1@ziralink.local", response.Email);
         }
 
         [Theory]
@@ -48,9 +48,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         public async Task GetCustomerByExternalId_WhenExternalIdIsNotExist_ShouldHasData(string externalId)
         {
             //Arrange
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => customerService.GetCustomerByExternalIdAsync(externalId, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
@@ -62,9 +62,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         public async Task GetAll_ShouldHasData()
         {
             //Arrange
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var response = await customerService.GetAllAsync(CancellationToken.None);
             Assert.True(response is List<Customer>);
@@ -72,14 +72,14 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
         #endregion
 
-        #region CreateCustomerLocally
+        #region CreateLocallyAsync
         [Theory]
-        [InlineData("10", "TestUser", "TestEmail@email.com", "Test", "Testi")]
-        public async Task CreateCustomerLocally_WhenEverythingIsOk_ShouldBeSucceeded(string externalId, string username, string email, string name, string family)
+        [InlineData("10", "TestUserLocally", "TestLocallyEmail@ziralink.local", "TestLocal", "TestLocally")]
+        public async Task CreateLocallyAsync_WhenEverythingIsOk_ShouldBeSucceeded(string externalId, string username, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var response = await customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None);
 
@@ -95,36 +95,36 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData("10", "", "TestEmail@email.com", "Test", "Testi")]
-        public async Task CreateCustomerLocally_WhenUsernameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        [InlineData("10", "", "TestEmail@ziralink.local", "Test", "Testi")]
+        public async Task CreateLocallyAsync_WhenUsernameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None));
             Assert.Equal("username", exception.ParamName);
         }
 
         [Theory]
-        [InlineData("10", "TestUser", "TestEmail@email.com", "", "Testi")]
-        public async Task CreateCustomerLocally_WhenNameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        [InlineData("10", "TestUser", "TestEmail@ziralink.local", "", "Testi")]
+        public async Task CreateLocallyAsync_WhenNameIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None));
             Assert.Equal("name", exception.ParamName);
         }
 
         [Theory]
-        [InlineData("100", "TestUser", "TestEmail@email.com", "Test", "")]
-        public async Task CreateCustomerLocally_WhenFamilyIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
+        [InlineData("100", "TestUser", "TestEmail@ziralink.local", "Test", "")]
+        public async Task CreateLocallyAsync_WhenFamilyIsEmpty_ShouldBeFailed(string externalId, string username, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateLocallyAsync(externalId, username, email, name, family, CancellationToken.None));
             Assert.Equal("family", exception.ParamName);
@@ -134,18 +134,16 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #region CreateCustomer
         [Theory]
-        [InlineData("TestUser", "TestPassword", "TestEmail@email.com", "Test", "Testi")]
-        public async Task CreateCustomer_WhenEverythingIsOk_ShouldBeSucceeded(string username, string password, string email, string name, string family)
-        {
-            var mockHttpClient = new Mock<HttpClient>(); 
-            var mockHttpTools = new Mock<IHttpTools>();
+        [InlineData("TestUser", "TestPassword", "TestEmail@ziralink.local", "Test", "Testi")]
+        public async Task CreateAsync_WhenEverythingIsOk_ShouldBeSucceeded(string username, string password, string email, string name, string family)
+        { 
+            var mockIdentityService = new Mock<IIdentityService>();
        
-            var idsData = new ApiResponse<string> { Data = "10", Status = true };
- 
-            mockHttpTools.Setup(p => p.InitializeHttpClientAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mockHttpClient.Object);
-            mockHttpTools.Setup(p => p.CallIDSApis<ApiResponse<string>>(mockHttpClient.Object, It.IsAny<string>(), It.IsAny<object>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
+            var idsData = new ApiResponse<string> { Data = "90", Status = true };
+  
+            mockIdentityService.Setup(p => p.CreateUserAsync(It.IsAny<object>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
 
-            var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var response = await customerService.CreateAsync(username, password, email, name, family, CancellationToken.None);
 
@@ -162,27 +160,27 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         }
 
         [Theory]
-        [InlineData("", "TestPassword", "TestEmail@email.com", "Test", "Testi")]
-        public async Task CreateCustomer_WhenUsernameIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        [InlineData("", "TestPassword", "TestEmail@ziralink.local", "Test", "Testi")]
+        public async Task CreateAsync_WhenUsernameIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
 
             Assert.True(string.IsNullOrWhiteSpace(username));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
             Assert.Equal("username", exception.ParamName);
         }
 
         [Theory]
-        [InlineData("TestUser", "", "TestEmail@email.com", "Test", "Testi")]
-        public async Task CreateCustomer_WhenPasswordIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        [InlineData("TestUser", "", "TestEmail@ziralink.local", "Test", "Testi")]
+        public async Task CreateAsync_WhenPasswordIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
             Assert.True(string.IsNullOrWhiteSpace(password));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
             Assert.Equal("password", exception.ParamName);
@@ -190,51 +188,50 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("TestUser", "TestPassword", "", "Test", "Testi")]
-        public async Task CreateCustomer_WhenEmailIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        public async Task CreateAsync_WhenEmailIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
-
+            var mockIdentityService = new Mock<IIdentityService>();
 
             Assert.True(string.IsNullOrWhiteSpace(email));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
             Assert.Equal("email", exception.ParamName);
         }
 
         [Theory]
-        [InlineData("TestUser", "TestPassword", "TestEmail@email.com", "", "Testi")]
-        public async Task CreateCustomer_WhenNameIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        [InlineData("TestUser", "TestPassword", "TestEmail@ziralink.local", "", "Testi")]
+        public async Task CreateAsync_WhenNameIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
             Assert.True(string.IsNullOrWhiteSpace(name));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
             Assert.Equal("name", exception.ParamName);
         }
 
         [Theory]
-        [InlineData("TestUser", "TestPassword", "TestEmail@email.com", "Test", "")]
-        public async Task CreateCustomer_WhenFamilyIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
+        [InlineData("TestUser", "TestPassword", "TestEmail@ziralink.local", "Test", "")]
+        public async Task CreateAsync_WhenFamilyIsEmpty_ShouldBeFailed(string username, string password, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
             Assert.True(string.IsNullOrWhiteSpace(family));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
             Assert.Equal("family", exception.ParamName);
         }
 
         [Theory]
-        [InlineData("TestUser2", "TestPassword", "TestUser2@ZiraLink.com", "Test", "Testi")]
-        public async Task CreateCustomer_WhenCustomerExists_ShouldBeFailed(string username, string password, string email, string name, string family)
+        [InlineData("TestUser2", "TestPassword", "TestUser2@ziralink.local", "Test", "Testi")]
+        public async Task CreateAsync_WhenCustomerExists_ShouldBeFailed(string username, string password, string email, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ApplicationException>(() => customerService.CreateAsync(username, password, email, name, family, CancellationToken.None));
             Assert.Equal("Customer exists", exception.Message);
@@ -242,20 +239,19 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #endregion
 
-        #region ChangePassword
+        #region ChangePasswordAsync
         [Theory]
         [InlineData("3", "TestPassword", "TestNewPassword")]
-        public async Task ChangePassword_WhenEverythingIsOk_ShouldBeSucceeded(string userId, string currentPassword, string newPassword)
+        public async Task ChangePasswordAsynWhenEverythingIsOk_ShouldBeSucceeded(string userId, string currentPassword, string newPassword)
         {
             var mockHttpClient = new Mock<HttpClient>(); 
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
        
             var idsData = new ApiResponse<string> { Data = "10", Status = true };
- 
-            mockHttpTools.Setup(p => p.InitializeHttpClientAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mockHttpClient.Object);
-            mockHttpTools.Setup(p => p.CallIDSApis<ApiResponse<string>>(mockHttpClient.Object, It.IsAny<string>(), It.IsAny<object>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
 
-            var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            mockIdentityService.Setup(p => p.ChangePasswordAsync(It.IsAny<object>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
+
+            var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             await customerService.ChangePasswordAsync(userId, currentPassword, newPassword, CancellationToken.None);
 
@@ -264,13 +260,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("", "TestPassword", "TestNewPassword")]
-        public async Task ChangePassword_WhenUserIdIsEmpty_ShouldBeFailed(string userId, string currentPassword, string newPassword)
+        public async Task ChangePasswordAsynWhenUserIdIsEmpty_ShouldBeFailed(string userId, string currentPassword, string newPassword)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
-
-
+            var mockIdentityService = new Mock<IIdentityService>();
+             
             Assert.True(string.IsNullOrWhiteSpace(userId));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.ChangePasswordAsync(userId, currentPassword, newPassword, CancellationToken.None));
             Assert.Equal("userId", exception.ParamName);
@@ -278,13 +273,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("3", "", "TestNewPassword")]
-        public async Task ChangePassword_WhenCurrentPasswordIsEmpty_ShouldBeFailed(string userId, string currentPassword, string newPassword)
+        public async Task ChangePasswordAsynWhenCurrentPasswordIsEmpty_ShouldBeFailed(string userId, string currentPassword, string newPassword)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
-
-
+            var mockIdentityService = new Mock<IIdentityService>();
+             
             Assert.True(string.IsNullOrWhiteSpace(currentPassword));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.ChangePasswordAsync(userId, currentPassword, newPassword, CancellationToken.None));
             Assert.Equal("currentPassword", exception.ParamName);
@@ -292,13 +286,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("3", "TestPassword", "")]
-        public async Task ChangePassword_WhenNewPasswordIsEmpty_ShouldBeFailed(string userId, string currentPassword, string newPassword)
+        public async Task ChangePasswordAsynWhenNewPasswordIsEmpty_ShouldBeFailed(string userId, string currentPassword, string newPassword)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
-
-
+            var mockIdentityService = new Mock<IIdentityService>();
+             
             Assert.True(string.IsNullOrWhiteSpace(newPassword));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.ChangePasswordAsync(userId, currentPassword, newPassword, CancellationToken.None));
             Assert.Equal("newPassword", exception.ParamName);
@@ -306,12 +299,11 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("9999", "TestPassword", "TestNewPassword")]
-        public async Task ChangePassword_WhenCustomerIdIsNotExist_ShouldBeFailed(string userId, string currentPassword, string newPassword)
+        public async Task ChangePasswordAsynWhenCustomerIdIsNotExist_ShouldBeFailed(string userId, string currentPassword, string newPassword)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
-
-
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            var mockIdentityService = new Mock<IIdentityService>();
+             
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => customerService.ChangePasswordAsync(userId, currentPassword, newPassword, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
@@ -319,20 +311,19 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         #endregion
 
-        #region UpdateProfile
+        #region UpdateProfileAsync
         [Theory]
         [InlineData("3", "Test", "Testi")]
-        public async Task UpdateProfile_WhenEverythingIsOk_ShouldBeSucceeded(string userId, string name, string family)
+        public async Task UpdateProfileAsync_WhenEverythingIsOk_ShouldBeSucceeded(string userId, string name, string family)
         {
             var mockHttpClient = new Mock<HttpClient>(); 
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
        
             var idsData = new ApiResponse<string> { Data = "10", Status = true };
- 
-            mockHttpTools.Setup(p => p.InitializeHttpClientAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mockHttpClient.Object);
-            mockHttpTools.Setup(p => p.CallIDSApis<ApiResponse<string>>(mockHttpClient.Object, It.IsAny<string>(), It.IsAny<object>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
+             
+            mockIdentityService.Setup(p => p.UpdateUserAsync(It.IsAny<object>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
 
-            var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
  
             await customerService.UpdateProfileAsync(userId, name, family, CancellationToken.None);
 
@@ -341,13 +332,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("", "Test", "Testi")]
-        public async Task UpdateProfile_WhenUserIdIsEmpty_ShouldBeFailed(string userId, string name, string family)
+        public async Task UpdateProfileAsync_WhenUserIdIsEmpty_ShouldBeFailed(string userId, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
-
-
+            var mockIdentityService = new Mock<IIdentityService>();
+             
             Assert.True(string.IsNullOrWhiteSpace(userId));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.UpdateProfileAsync(userId, name, family, CancellationToken.None));
             Assert.Equal("userId", exception.ParamName);
@@ -355,13 +345,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("3", "", "Testi")]
-        public async Task UpdateProfile_WhenNameIsEmpty_ShouldBeFailed(string userId, string name, string family)
+        public async Task UpdateProfileAsync_WhenNameIsEmpty_ShouldBeFailed(string userId, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
-
-
+            var mockIdentityService = new Mock<IIdentityService>();
+             
             Assert.True(string.IsNullOrWhiteSpace(name));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.UpdateProfileAsync(userId, name, family, CancellationToken.None));
             Assert.Equal("name", exception.ParamName);
@@ -369,13 +358,12 @@ namespace ZiraLink.Api.Application.UnitTests.Services
 
         [Theory]
         [InlineData("3", "Test", "")]
-        public async Task UpdateProfile_WhenFamilyIsEmpty_ShouldBeFailed(string userId, string name, string family)
+        public async Task UpdateProfileAsync_WhenFamilyIsEmpty_ShouldBeFailed(string userId, string name, string family)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
-
-
+            var mockIdentityService = new Mock<IIdentityService>();
+             
             Assert.True(string.IsNullOrWhiteSpace(family));
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.UpdateProfileAsync(userId, name, family, CancellationToken.None));
             Assert.Equal("family", exception.ParamName);
@@ -385,10 +373,9 @@ namespace ZiraLink.Api.Application.UnitTests.Services
         [InlineData("999", "Test", "Testi")]
         public async Task UpdateProfiled_WhenCustomerIdIsNotExist_ShouldBeFailed(string userId, string currentPassword, string newPassword)
         {
-            var mockHttpTools = new Mock<IHttpTools>();
+            var mockIdentityService = new Mock<IIdentityService>();
 
-
-            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockHttpTools.Object);
+            CustomerService customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(() => customerService.UpdateProfileAsync(userId, currentPassword, newPassword, CancellationToken.None));
             Assert.Equal("Customer", exception.Message);
