@@ -99,12 +99,12 @@ namespace ZiraLink.Api.Application.Services
             HttpResponseMessage? response;
 
             response = await httpClient.PatchAsync(uri.ToString(), content);
-            ApiResponse<string> userCreationResult;
+            ApiResponse<string> userChangePasswordResult;
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            userCreationResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) ?? new ApiResponse<string>();
+            userChangePasswordResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) ?? new ApiResponse<string>();
 
-            return userCreationResult;
+            return userChangePasswordResult;
         }
         
         public async Task<ApiResponse<string>> UpdateUserAsync(string userId, string name, string family, CancellationToken cancellationToken)
@@ -125,12 +125,12 @@ namespace ZiraLink.Api.Application.Services
             HttpResponseMessage? response;
 
             response = await httpClient.PatchAsync(uri.ToString(), content);
-            ApiResponse<string> userCreationResult;
+            ApiResponse<string> userUpdatingResult;
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            userCreationResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) ?? new ApiResponse<string>();
+            userUpdatingResult = JsonSerializer.Deserialize<ApiResponse<string>>(responseString, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) ?? new ApiResponse<string>();
 
-            return userCreationResult;
+            return userUpdatingResult;
         }
          
     }
