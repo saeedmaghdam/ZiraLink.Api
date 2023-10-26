@@ -141,7 +141,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
        
             var idsData = new ApiResponse<string> { Data = "90", Status = true };
   
-            mockIdentityService.Setup(p => p.CreateUserAsync(It.IsAny<object>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
+            mockIdentityService.Setup(p => p.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
 
             var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
@@ -249,7 +249,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
        
             var idsData = new ApiResponse<string> { Data = "10", Status = true };
 
-            mockIdentityService.Setup(p => p.ChangePasswordAsync(It.IsAny<object>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
+            mockIdentityService.Setup(p => p.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
 
             var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
 
@@ -321,7 +321,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
        
             var idsData = new ApiResponse<string> { Data = "10", Status = true };
              
-            mockIdentityService.Setup(p => p.UpdateUserAsync(It.IsAny<object>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
+            mockIdentityService.Setup(p => p.UpdateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(idsData);
 
             var customerService = new CustomerService(_testTools.AppMemoryDbContext, mockIdentityService.Object);
  
