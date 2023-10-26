@@ -29,9 +29,8 @@ namespace ZiraLink.Api.Application.Services
 
             _idsUri = new Uri(configuration["ZIRALINK_URL_IDS"]!); 
         }
-         
-
-        public async Task<HttpClient> InitializeHttpClientAsync(CancellationToken cancellationToken)
+          
+        private async Task<HttpClient> InitializeHttpClientAsync(CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient(NamedHttpClients.Default);
             var disco = await httpClient.GetDiscoveryDocumentAsync(_idsUri.ToString(), cancellationToken);
@@ -41,7 +40,6 @@ namespace ZiraLink.Api.Application.Services
             var tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = disco.TokenEndpoint,
-
                 ClientId = "back",
                 ClientSecret = "secret",
                 Scope = "ziralink IdentityServerApi"
@@ -55,9 +53,19 @@ namespace ZiraLink.Api.Application.Services
             return httpClient;
         }
 
-        public async Task<ApiResponse<string>> CreateUserAsync(object jsonObject, CancellationToken cancellationToken)
+        public async Task<ApiResponse<string>> CreateUserAsync(string username, string password, string email, string name, string family, CancellationToken cancellationToken)
         {
             var httpClient = await InitializeHttpClientAsync(cancellationToken);
+
+             var jsonObject = new
+            {
+                Username = username,
+                Password = password,
+                Email = email,
+                Name = name,
+                Family = family
+            };
+
             var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
             var baseUri = _idsUri;
             var uri = new Uri(baseUri, "User");
@@ -73,9 +81,17 @@ namespace ZiraLink.Api.Application.Services
             return userCreationResult;
         }
         
-        public async Task<ApiResponse<string>> ChangePasswordAsync(object jsonObject, CancellationToken cancellationToken)
+        public async Task<ApiResponse<string>> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken)
         {
             var httpClient = await InitializeHttpClientAsync(cancellationToken);
+            
+             var jsonObject = new
+            {
+                UserId = userId,
+                CurrentPassword = currentPassword,
+                NewPassword = newPassword
+            };
+
             var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
             var baseUri = _idsUri;
             var uri = new Uri(baseUri, "User/ChangePassword");
@@ -91,9 +107,17 @@ namespace ZiraLink.Api.Application.Services
             return userCreationResult;
         }
         
-        public async Task<ApiResponse<string>> UpdateUserAsync(object jsonObject, CancellationToken cancellationToken)
+        public async Task<ApiResponse<string>> UpdateUserAsync(string userId, string name, string family, CancellationToken cancellationToken)
         {
             var httpClient = await InitializeHttpClientAsync(cancellationToken);
+
+             var jsonObject = new
+            {
+                UserId = userId,
+                Name = name,
+                Family = family
+            };
+
             var content = new StringContent(JsonSerializer.Serialize(jsonObject), Encoding.UTF8, "application/json");
             var baseUri = _idsUri;
             var uri = new Uri(baseUri, "User");

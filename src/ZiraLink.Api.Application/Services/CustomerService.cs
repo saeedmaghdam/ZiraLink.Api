@@ -77,16 +77,9 @@ namespace ZiraLink.Api.Application.Services
             var customer = await _dbContext.Customers.SingleOrDefaultAsync(x => x.Username == username || x.Email == email, cancellationToken);
             if (customer != null) throw new ApplicationException("Customer exists");
              
-            var jsonObject = new
-            {
-                Username = username,
-                Password = password,
-                Email = email,
-                Name = name,
-                Family = family
-            };
+           
 
-            var userCreationResult = await _identityService.CreateUserAsync(jsonObject, cancellationToken);
+            var userCreationResult = await _identityService.CreateUserAsync(username, password, email, name, family, cancellationToken);
             if (!userCreationResult.Status)
                 throw new ApplicationException("User creation on identity server failed");
 
@@ -118,18 +111,11 @@ namespace ZiraLink.Api.Application.Services
             var customer = await _dbContext.Customers.AsNoTracking().SingleOrDefaultAsync(x => x.ExternalId == userId, cancellationToken);
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), userId) });
-             
-            var jsonObject = new
-            {
-                UserId = userId,
-                CurrentPassword = currentPassword,
-                NewPassword = newPassword
-            };
-
-            var userCreationResult = await _identityService.ChangePasswordAsync(jsonObject, cancellationToken);
+              
+            var userChangePasswordResult = await _identityService.ChangePasswordAsync(userId, currentPassword, newPassword, cancellationToken);
          
-            if (!userCreationResult.Status)
-                throw new ApplicationException("User creation on identity server failed");
+            if (!userChangePasswordResult.Status)
+                throw new ApplicationException("Changing password on identity server failed");
         }
 
         public async Task UpdateProfileAsync(string userId, string name, string family, CancellationToken cancellationToken)
@@ -145,17 +131,11 @@ namespace ZiraLink.Api.Application.Services
             if (customer == null)
                 throw new NotFoundException(nameof(Customer), new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>(nameof(Customer.ExternalId), userId) });
              
-            var jsonObject = new
-            {
-                UserId = userId,
-                Name = name,
-                Family = family
-            };
-
-            var userCreationResult = await _identityService.UpdateUserAsync(jsonObject, cancellationToken);
+         
+            var userUpdatingResult = await _identityService.UpdateUserAsync(userId, name, family, cancellationToken);
              
-            if (!userCreationResult.Status)
-                throw new ApplicationException("User creation on identity server failed");
+            if (!userUpdatingResult.Status)
+                throw new ApplicationException("Updating profile on identity server failed");
 
             customer.Name = name;
             customer.Family = family;

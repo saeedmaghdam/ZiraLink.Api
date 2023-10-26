@@ -10,10 +10,9 @@ namespace ZiraLink.Api.Application.Services
 {
     public interface IIdentityService
     {
-        Task<HttpClient> InitializeHttpClientAsync(CancellationToken cancellationToken);
-        Task<ApiResponse<string>> CreateUserAsync(object jsonObject, CancellationToken cancellationToken);
-        Task<ApiResponse<string>> ChangePasswordAsync(object jsonObject, CancellationToken cancellationToken);
-        Task<ApiResponse<string>> UpdateUserAsync(object jsonObject, CancellationToken cancellationToken);
+        Task<ApiResponse<string>> CreateUserAsync(string username, string password, string email, string name, string family, CancellationToken cancellationToken);
+        Task<ApiResponse<string>> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken);
+        Task<ApiResponse<string>> UpdateUserAsync(string userId, string name, string family, CancellationToken cancellationToken);
 
     }
 }
