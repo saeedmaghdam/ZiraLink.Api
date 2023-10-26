@@ -63,7 +63,7 @@ namespace ZiraLink.Api.Application.UnitTests.Services
             Assert.Equal("TestUser4", customer.Username);
             Assert.Equal("TestName4", customer.Name);
             Assert.Equal("User4", customer.Family);
-            Assert.Equal("TestUser4@ZiraLink.com", customer.Email);
+            Assert.Equal("TestUser4@ziralink.local", customer.Email);
             var response = await appProjectService.GetAsync(customerId, appProjectType, CancellationToken.None);
 
             Assert.False(response.Any());

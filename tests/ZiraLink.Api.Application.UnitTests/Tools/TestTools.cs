@@ -40,7 +40,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                     {
                         ViewId = Guid.NewGuid(),
                         Username = $"TestUser{i}",
-                        Email = $"TestUser{i}@ZiraLink.com",
+                        Email = $"TestUser{i}@ziralink.local",
                         Name = $"TestName{i}",
                         Family = $"User{i}",
                         ExternalId = i.ToString()
@@ -99,7 +99,7 @@ namespace ZiraLink.Api.Application.UnitTests.Tools
                 {
                     ViewId = Guid.NewGuid(),
                     Username = $"TestUser{countCustomer + 1}",
-                    Email = $"TestUser{countCustomer + 1}@ZiraLink.com",
+                    Email = $"TestUser{countCustomer + 1}@ziralink.local",
                     Name = $"TestName{countCustomer + 1}",
                     Family = $"User{countCustomer + 1}",
                     ExternalId = (countCustomer + 1).ToString()
